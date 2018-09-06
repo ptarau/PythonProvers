@@ -39,6 +39,7 @@ def decorate(tree,leafIter) :
     return decorate(l,leafIter),decorate(r,leafIter)
 
 # set partition generator, as list of indices
+
 def genListPartition(n) : 
   xs=list(range(n))
   for pss in partition(xs) :

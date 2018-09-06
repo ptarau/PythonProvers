@@ -2,7 +2,7 @@ import timeit
 from formulas import iFormula, ranLBin
 from remy import ranBin0
 
-from provers import iprove, fprove, isVar
+from provers import iprove, ljb, fprove, isVar
 import gs
 
 def allFormTest(n) :

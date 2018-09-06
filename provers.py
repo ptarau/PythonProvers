@@ -31,11 +31,11 @@ def ljb(G,Vs1) :
  
 def ljb_imp(A,B,Vs1) :
   if isVar(A) :
-    yield memb(A,Vs1)
+    return memb(A,Vs1)
   else :
     C,D=A
     Vs2 = ((D,B),Vs1)
-    for R in ljb((C,D),Vs2) : yield R
+    for R in ljb((C,D),Vs2) : return R
 
 # derived from Prolog version   
 '''
