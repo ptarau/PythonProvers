@@ -5,6 +5,20 @@ from remy import ranBin0
 from provers import iprove, fprove, isVar
 import gs
 
+def allFormTest(n) :
+  provable = 0
+  unprovable = 0
+  for t in iFormula(n) :
+    if(iprove(t)) :
+      provable+=1
+    else :
+      unprovable+=1
+  total=provable+unprovable   
+  print('total',total,'provable',provable,'unprovable',unprovable)   
+    
+
+
+  
 # helpers
 
 def ishow(t) :
