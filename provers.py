@@ -74,7 +74,7 @@ def ljf_reduce(V,G,Vs) :
              for R in ljf(G,Vs3) : yield R
         #elif  Op == '&' 
           
-# full prover   
+# full prover   - TODO
 def fprove(G) : return next(ljb(G,None),False)
 
 def ljf(G,Vs) :
