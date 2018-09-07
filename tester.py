@@ -1,5 +1,5 @@
 import timeit
-from formulas import iFormula, ranLBin
+from formulas import iFormula, iCounts, ranLBin
 from remy import ranBin0
 
 from provers import iprove, ljb, fprove, isVar
@@ -72,16 +72,21 @@ def ranTestProver(K,N) :
     print(res,'\n')  
   return 'succ', succ,'fail',fail
   
-def bm() :
+def rbm() :
   bmf2(ranTestProver,16,60)
     
 def proveGs() :
   succ=0
   fail=0
   for g in gs.gs: 
-    if(prove(g)) :
+    if(iprove(g)) :
       succ+=1; 
     else :
       fail+=1
-  return succ,fail      
+  return succ,fail     
+ 
+ 
+def bm() :
+  bmf1(allFormTest,7)
+  
   
