@@ -1,8 +1,18 @@
+import trace
+
+def bug() :
+  tr = trace.Trace()
+  #it = ('->', ('->', ('->', 0, 0), 0), 0)
+  tr.run("fprove( ('->', ('->', ('->', 0, 0), 0), 0) )")
+  
 import timeit
 from formulas import iFormula, iCounts, ranLBin
 from remy import ranBin0
 
 from provers import iprove, ljb, fprove, isTuple
+
+from buggy import gprove, ljg
+
 import gs
 
 # try iprove on all implicational formulas of size n
@@ -14,6 +24,9 @@ def allFormTest(n) :
 # but this shows that it covers the implicational subset
 def allFormTest1(n) :
   return allFormTest2(fprove,to_triplet,n)  
+
+def buggyTest(n) :
+  return allFormTest2(gprove,identity,n) 
   
 def allFormTest2(f,transformer,n) :
   provable = 0
@@ -119,7 +132,9 @@ def bm() :
 
 def bm1() :
   bmf1(allFormTest1,6)
-  
+
+def bugbm() :
+  bmf1(buggyTest,6)  
   
 def t1() :
   x=('->',('&',0,1),1)

@@ -71,11 +71,8 @@ ljfa_imp(A,B,Vs,[B|Vs]):-memberchk(A,Vs).
 def fprove(G) : return next(ljf(G,None),False)
 
 def ljf_reduce(V,G,Vs) :        
-      if not isTuple(V) : 
-        return False
-      else :
         Op,A,B=V
-        if Op=='->' :
+        if Op=='->' : 
           return ljf_imp(A,B,Vs)
         elif  Op == '&' :
           return (A,(B,Vs))
@@ -86,10 +83,25 @@ def ljf_reduce(V,G,Vs) :
           NewVs = next(ljf(G,(A,Vs)),False)
           if NewVs :
             return (B,NewVs)
-          else :
-            return False 
           
-          
+def ljf_imp(A,B,Vs1) :
+  if not isTuple(A) :
+    if memb(A,Vs1) :
+      return (B,Vs1)
+  else :
+    Op,C,D=A
+    if Op == '->' : 
+      Vs2 = (('->',D,B),Vs1)
+      if next(ljf(('->',C,D),Vs2),False)  :
+        return (B,Vs2)
+    elif Op == '&' :     
+      return ('->',C,('->',D,B))    
+    elif Op == 'v' :
+      return (('->',('->',C,D),('->',('->',D,C),B)),Vs1)
+    else :
+      # assert(Op == '<->') 
+      return ('->',('->',C,D),('->',('->',D,X),B))
+      
 # full prover   - TODO
 def fprove(G) : return next(ljf(G,None),False)
 
@@ -100,11 +112,11 @@ def ljf(G,Vs) :
   elif isTuple(G) :
     Op,A,B = G
     if Op == '<->' :
-       for x in ljf(('->',A,B)) :
+       for x in ljf(('->',A,B),Vs) :
          if x :
            for y in ljf(('->',B,A),Vs) : 
              if y : yield True
-    elif Op == '->' :
+    elif Op == '->' : 
        for R in ljf(B,(A,Vs))  : yield R         
     elif Op == '&' :
        for x in ljf(A,Vs) :
@@ -116,32 +128,17 @@ def ljf(G,Vs) :
          yield x
        for y in ljf(B,Vs) : 
          yield y
+    else:
+       raise ValueError('unexpected operator: '+Op)
   else : # isVar(G)
     for V,Vs1 in selectFirst(Vs) :
-      Vs2 = ljf_reduce(V,G,Vs1)
-      if Vs2 :
-        for R in ljf(G,Vs2) :
-          yield R
+      if isTuple(V) :
+        Vs2 = ljf_reduce(V,G,Vs1)
+        if Vs2 :
+          for R in ljf(G,Vs2) :
+            yield R
         
-def ljf_imp(A,B,Vs1) :
-  if not isTuple(A) :
-    if memb(A,Vs1) :
-      return (B,Vs1)
-    else :
-      return False
-  else :
-    Op,C,D=A
-    if Op == '->' :
-      Vs2 = (('->',D,B),Vs1)
-      if next(ljf(('->',C,D),Vs2),False)  :
-        return Vs2   
-    elif Op == '&' :     
-      return ('->',C,('->',D,B))    
-    elif Op == 'v' :
-      return (('->',('->',C,D),('->',('->',D,C),B)),Vs1)
-    else :
-      # assert(Op == '<->') 
-      return ('->',('->',C,D),('->',('->',D,X),B))
+            
       
 # to complete    
     
