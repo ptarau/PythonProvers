@@ -2,14 +2,25 @@ import timeit
 from formulas import iFormula, iCounts, ranLBin
 from remy import ranBin0
 
-from provers import iprove, ljb, fprove, isVar
+from provers import iprove, ljb, fprove, isTuple
 import gs
 
+# try iprove on all implicational formulas of size n
 def allFormTest(n) :
+  return allFormTest2(iprove,identity,n)
+
+# try fprove on all implicational formulas of size n
+# fprove covers full untuitionistic propositional logic
+# but this shows that it covers the implicational subset
+def allFormTest1(n) :
+  return allFormTest2(fprove,to_triplet,n)  
+  
+def allFormTest2(f,transformer,n) :
   provable = 0
   unprovable = 0
-  for t in iFormula(n) :
-    if(iprove(t)) :
+  for t0 in iFormula(n) :
+    t = transformer(t0)
+    if(f(t)) :
       provable+=1
     else :
       unprovable+=1
@@ -17,12 +28,29 @@ def allFormTest(n) :
   print('total',total,'provable',provable,'unprovable',unprovable)   
     
 
+def proverDiff(n) :
+  for t0 in iFormula(n) :
+    t = to_triplet(t0)
+    f= fprove(t)
+    i=iprove(t0)
+    if(f and not i) :
+     print('should_be_unprovable',t)
+    if(i and not f) :
+     print('should_be_provable',t) 
+    
+  
+def identity(x) : return x
 
+def to_triplet(x) :
+  if not isTuple(x) : return x
+  else :
+    a,b=x
+    return ('->',to_triplet(a),to_triplet(b))
   
 # helpers
 
 def ishow(t) :
-  if isVar(t) : return str(t)
+  if not isTuple(t) : return str(t)
   else :
     x,y=t
     return '(' + ishow(x) + '->' + ishow(y) + ')'
@@ -87,6 +115,13 @@ def proveGs() :
  
  
 def bm() :
-  bmf1(allFormTest,7)
+  bmf1(allFormTest,6)
+
+def bm1() :
+  bmf1(allFormTest1,6)
   
+  
+def t1() :
+  x=('->',('&',0,1),1)
+  return fprove(x)
   
