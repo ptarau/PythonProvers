@@ -3,6 +3,7 @@
 import random
 from ranpart import getBellNumber, getRandomSet, randPart
 from remy import ranBin, ranBin0
+from provers import isTuple
 
 # ---- all-terms of given size generators
 
@@ -14,12 +15,34 @@ def iFormula(n) :
     for lpart in genListPartition(n+1) :
       leafIter=iter(lpart)
       yield decorate(tree,leafIter)
+
+def fFormula(n) : 
+  for tree in opTree(n) :
+    m=leafCount(tree)
+    for lpart in genListPartition(m) :
+      leafIter=iter(lpart)
+      yield decorateFull(tree,leafIter)
+
+def leafCount(t) :
+  k = len(t)
+  if not k : 
+    return 1
+  elif k == 2 :
+    op,tt = t
+    return leafCount(tt)
+  else :
+    op,l,r = t
+    return leafCount(l)+leafCount(r)
+    
       
 # >>> iCounts(7)
 #[1, 2, 10, 75, 728, 8526, 115764]
 def iCounts(n) :
    return list(countFor(iFormula,n))
-      
+
+def fCounts(n) :
+  return list(countFor(fFormula,n))
+  
 # binary tree of size n
 
 def bin(n) :
@@ -38,6 +61,7 @@ def decorate(tree,leafIter) :
     l,r=tree
     return decorate(l,leafIter),decorate(r,leafIter)
 
+    
 # set partition generator, as list of indices
 
 def genListPartition(n) : 
@@ -114,7 +138,7 @@ def ranLBin(K,N) :
 # Motzkin trees of size n
 def mot (n) :
   if n==0 : 
-    yield n
+    yield ()
   else :
     for m in mot(n-1) :
       yield [m]
@@ -123,6 +147,47 @@ def mot (n) :
         for r in mot(n-2-k) :        
           yield (l,r)
 
+# operator tree
+
+def binOp() : 
+  return iter( ('->','<->','&','v') )
+  
+
+def opTree (n) :
+  if n==0 : 
+    yield ()
+  else :
+    for m in opTree(n-1) :
+      yield ('~',m)
+    for k in range(0,n-1) :    
+      for l in opTree(k) :
+        for r in opTree(n-2-k) : 
+          for op in binOp() :      
+            yield (op,l,r)
+          
+          
+def decorateFull(tree,leafIter) :
+  if not tree : 
+    return leafIter.__next__()
+  else :
+    if len(tree) == 2 :
+      op,t=tree
+      return (op,decorateFull(t,leafIter))
+    else :  
+      op,l,r=tree
+      return (op,decorateFull(l,leafIter),decorateFull(r,leafIter))
+    
+def expandNeg(t) :
+  if not isTuple(t) : return t
+  elif len(t) == 2 :
+    op,tt = t
+    # assert op == '~'
+    et = expandNeg(tt)
+    return ('->',et,'false')
+  else :
+    op,l,r=t
+    return (op,expandNeg(l),expandNeg(r))
+    
 # closed lambda terms
 def closed(n) :
   return clam(n,0)

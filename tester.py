@@ -1,37 +1,41 @@
+from formulas import iFormula,iCounts,fCounts,ranLBin,binOp,opTree,fFormula,expandNeg,genListPartition
+from remy import ranBin0
+from provers import iprove, ljb, fprove, isTuple
+from buggy import gprove, ljg
+import gs
+
+import timeit
 import trace
 
-def bug() :
+def nobug() :
   tr = trace.Trace()
   #it = ('->', ('->', ('->', 0, 0), 0), 0)
   tr.run("fprove( ('->', ('->', ('->', 0, 0), 0), 0) )")
   
-import timeit
-from formulas import iFormula, iCounts, ranLBin
-from remy import ranBin0
-
-from provers import iprove, ljb, fprove, isTuple
-
-from buggy import gprove, ljg
-
-import gs
-
+def bug() :
+  tr = trace.Trace()
+  tr.run("t2()")
+  
 # try iprove on all implicational formulas of size n
 def allFormTest(n) :
-  return allFormTest2(iprove,identity,n)
+  return allFormTest2(iprove,iFormula,identity,n)
 
+def fullFormTest(n) :
+  return allFormTest2(fprove,fFormula,expandNeg,n)   
+  
 # try fprove on all implicational formulas of size n
 # fprove covers full untuitionistic propositional logic
 # but this shows that it covers the implicational subset
 def allFormTest1(n) :
-  return allFormTest2(fprove,to_triplet,n)  
+  return allFormTest2(fprove,iFormula,to_triplet,n)  
 
 def buggyTest(n) :
-  return allFormTest2(gprove,identity,n) 
+  return allFormTest2(gprove,iFormula,identity,n) 
   
-def allFormTest2(f,transformer,n) :
+def allFormTest2(f,generator,transformer,n) :
   provable = 0
   unprovable = 0
-  for t0 in iFormula(n) :
+  for t0 in generator(n) :
     t = transformer(t0)
     if(f(t)) :
       provable+=1
@@ -133,10 +137,22 @@ def bm() :
 def bm1() :
   bmf1(allFormTest1,6)
 
+def fbmn(n) :
+  bmf1(fullFormTest,n)
+
+def fbm() :
+  fbmn(5)
+   
 def bugbm() :
   bmf1(buggyTest,6)  
   
 def t1() :
   x=('->',('&',0,1),1)
   return fprove(x)
+  
+  
+def t2() :
+  x= ('<->', 0, ('v', 0, 1))
+  return fprove(x)
+
   
