@@ -1,6 +1,6 @@
 from formulas import iFormula,iCounts,fCounts,ranLBin,binOp,opTree,fFormula,expandNeg,genListPartition
 from remy import ranBin0
-from provers import iprove, ljb, fprove, ljf, isTuple, ishow, to_triplet, identity
+from provers import iprove, ljb, fprove, ljf, isTuple, ishow, to_triplet,fromList, toList, identity, selectFirst
 from buggy import gprove, ljg
 import gs
 import timeit

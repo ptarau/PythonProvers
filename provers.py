@@ -47,7 +47,7 @@ ljf(_,Vs):-memberchk(false,Vs),!.
 ljf(A <-> B,Vs):-!,ljf((A->B),Vs),ljf((B->A),Vs).
 ljf((A->B),Vs):-!,ljf(B,[A|Vs]).
 ljf(A & B,Vs):-!,ljf(A,Vs),ljf(B,Vs).
-ljf(G,Vs1):- % atomic or disj
+ljf(G,Vs1):- % atomic or disj or false
   select(Red,Vs1,Vs2),
   ljf_reduce(Red,G,Vs2,Vs3),
   !,
@@ -79,33 +79,25 @@ def ljf(G,Vs) :
   elif isTuple(G) :
     Op,A,B = G
     if Op == '<->' :
-       for x in ljf( ('->',A,B), Vs) :
-           for y in ljf( ('->',B,A), Vs) : 
-              yield True
+       for x in ljf(B, (A,Vs)) :
+           for y in ljf(A, (B,Vs)) :  yield True
     elif Op == '->' : 
-       for R in ljf(B,(A,Vs))  : 
-         yield R         
+       for R in ljf(B,(A,Vs))  : yield R         
     elif Op == '&' :
        for x in ljf(A,Vs) :
-           for y in ljf(B,Vs) : 
-             yield True
+           for y in ljf(B,Vs) : yield True
     elif Op == 'v' :
-       for x in ljf(A,Vs) :
-         yield x
-       for y in ljf(B,Vs) : 
-         yield y
+       for x in ljf(A,Vs) : yield x
+       for y in ljf(B,Vs) : yield y
     else:
        raise ValueError('unexpected operator: '+Op)
-  #elif G=='false' :
-     #raise('false')
-     #return False
   else : # isVar(G) or 'false'
     for V,Vs1 in selectFirst(Vs) :
       if isTuple(V) :
+        #ppp(V,Vs1)
         Vs2 = ljf_reduce(V,G,Vs1)
         if Vs2 :
-          for R in ljf(G,Vs2) :
-             yield R
+          for R in ljf(G,Vs2) : yield R
            
 def ljf_reduce(V,G,Vs) :        
         Op,A,B=V
@@ -116,20 +108,17 @@ def ljf_reduce(V,G,Vs) :
           return A,(B,Vs)
         elif Op == '<->' :
           return ('->',A,B),(('->',B,A),Vs)
-        elif Op=='v' :
+        elif Op == 'v' :
           if next(ljf(G,(A,Vs)),False) :
             return B,Vs
           
 def ljf_imp(A,B,Vs1) :
-  if not isTuple(A) :
-    if memb(A,Vs1) :
-      return B,Vs1
-  else :
+  if isTuple(A) :
     Op,C,D=A
     if Op == '->' : 
       Vs2 = (('->',D,B),Vs1)
       if next(ljf(('->',C,D),Vs2),False)  :
-        return B,Vs2
+        return B,Vs1
     elif Op == '&' :     
       return ('->',C,('->',D,B)),Vs1   
     elif Op == 'v' :
@@ -139,7 +128,9 @@ def ljf_imp(A,B,Vs1) :
       cd = ('->',C,D)
       dc = ('->',D,C)
       return ('->',cd,('->',dc,B)),Vs1
-         
+  else :   
+    if memb(A,Vs1) : return B,Vs1
+   
 # helpers    
     
 def selectFirst(Xs) :
@@ -201,4 +192,14 @@ def inImmutable(Is) :
     yield I
     for J in inImmutable(Js) : yield J 
     
-    
+def fromList(Ls) :
+  Xs = None
+  Rs = Ls.copy()
+  while Rs :
+    X = Rs.pop()
+    Xs = X,Xs
+  return Xs
+  
+def toList(Is) : 
+  return list(inImmutable(Is))
+  
