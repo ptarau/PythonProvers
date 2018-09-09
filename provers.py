@@ -1,3 +1,5 @@
+#from tester import ishow,fshow
+
 # derived from Prolog version
 '''
 ljb(A,Vs):-memberchk(A,Vs),!.
@@ -66,27 +68,27 @@ ljf_imp(A,B,Vs,[B|Vs]):-memberchk(A,Vs).
 
 # full intuitionistic propositional prover
 def fprove(G) :
-  print(G)
+  #pp(G)
   return next(ljf(G,None),False)
 
 def ljf(G,Vs) :
-  #print(G,':-',Vs)
+  #print('ljf'),ppp(G,Vs)
+ 
   if memb(G,Vs) : yield True
   elif memb('false',Vs) : yield True  
   elif isTuple(G) :
     Op,A,B = G
     if Op == '<->' :
        for x in ljf( ('->',A,B), Vs) :
-         if x :
            for y in ljf( ('->',B,A), Vs) : 
-             if y : yield True
+              yield True
     elif Op == '->' : 
-       for R in ljf(B,(A,Vs))  : yield R         
+       for R in ljf(B,(A,Vs))  : 
+         yield R         
     elif Op == '&' :
        for x in ljf(A,Vs) :
-         if x :
            for y in ljf(B,Vs) : 
-             if y : yield True
+             yield True
     elif Op == 'v' :
        for x in ljf(A,Vs) :
          yield x
@@ -94,24 +96,27 @@ def ljf(G,Vs) :
          yield y
     else:
        raise ValueError('unexpected operator: '+Op)
-  else : # isVar(G)
+  #elif G=='false' :
+     #raise('false')
+     #return False
+  else : # isVar(G) or 'false'
     for V,Vs1 in selectFirst(Vs) :
       if isTuple(V) :
         Vs2 = ljf_reduce(V,G,Vs1)
         if Vs2 :
           for R in ljf(G,Vs2) :
-            yield R
+             yield R
            
 def ljf_reduce(V,G,Vs) :        
         Op,A,B=V
         if Op=='->' : 
+          #print('ljf_reduce'),ppp(G,Vs)
           return ljf_imp(A,B,Vs)
         elif  Op == '&' :
           return A,(B,Vs)
         elif Op == '<->' :
           return ('->',A,B),(('->',B,A),Vs)
-        else :
-          # assert(O=='v')
+        elif Op=='v' :
           if next(ljf(G,(A,Vs)),False) :
             return B,Vs
           
@@ -157,4 +162,43 @@ def memb(X,Xs) :
    else :
      return memb(X,Ys)
  
-   
+    
+# helpers
+
+def identity(x) : return x
+
+def to_triplet(x) :
+  if not isTuple(x) : return x
+  else :
+    a,b=x
+    return ('->',to_triplet(a),to_triplet(b))
+  
+def ishow(t) :
+  if not isTuple(t) : return str(t)
+  else :
+    x,y=t
+    return '(' + ishow(x) + '->' + ishow(y) + ')'
+  
+def fshow(t) :
+  if not isTuple(t) : return str(t)
+  else :
+    op,x,y=t
+    return '(' + fshow(x) + ' '+ op + ' ' + fshow(y) + ')'
+ 
+def pp(t) :
+  print(fshow(t))
+  
+def ppp(t,vs) :
+  print(fshow(t),' :-',end='')
+  for x in inImmutable(vs) :
+    print('  ',fshow(x),end='')  
+  print('\n')
+ 
+def inImmutable(Is) :
+  if not Is : return None
+  else :
+    I,Js = Is
+    yield I
+    for J in inImmutable(Js) : yield J 
+    
+    

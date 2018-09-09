@@ -1,12 +1,13 @@
 from formulas import iFormula,iCounts,fCounts,ranLBin,binOp,opTree,fFormula,expandNeg,genListPartition
 from remy import ranBin0
-from provers import iprove, ljb, fprove, isTuple
+from provers import iprove, ljb, fprove, ljf, isTuple, ishow, to_triplet, identity
 from buggy import gprove, ljg
 import gs
-
 import timeit
 import trace
 
+# tests    
+    
 def nobug() :
   tr = trace.Trace()
   #it = ('->', ('->', ('->', 0, 0), 0), 0)
@@ -56,22 +57,6 @@ def proverDiff(n) :
      print('should_be_provable',t) 
     
   
-def identity(x) : return x
-
-def to_triplet(x) :
-  if not isTuple(x) : return x
-  else :
-    a,b=x
-    return ('->',to_triplet(a),to_triplet(b))
-  
-# helpers
-
-def ishow(t) :
-  if not isTuple(t) : return str(t)
-  else :
-    x,y=t
-    return '(' + ishow(x) + '->' + ishow(y) + ')'
-
 # tests -----------------------------------
 
 t1 = ishow(((0,1),(0,(0,2))))
@@ -150,9 +135,12 @@ def t1() :
   x=('->',('&',0,1),1)
   return fprove(x)
   
-  
 def t2() :
-  x= ('<->', 0, ('v', 0, 1))
+  x= ('->', ('->', ('<->', ('->', 1, 2), ('<->', 1, 1)), 2), 2)
   return fprove(x)
 
+def t3() :
+  g=1
+  vs=(0, (0, (0, (0, (('->', 1, 1), (0, (0, (('->', 1, 1), (0, (0, (0, (('->', 1, 1), (0, (0, (0, (0, (('->', 1, 1), (0, (0, (0, (0, (('->', 1, 1), (0, (0, (0, None)))))))))))))))))))))))))
+  return next(ljf(g,vs),False)
   
