@@ -112,24 +112,24 @@ def ljf_reduce(V,G,Vs) :
           if next(ljf(G,(A,Vs)),False) :
             return B,Vs
           
-def ljf_imp(A,B,Vs1) :
+def ljf_imp(A,B,Vs) :
   if isTuple(A) :
     Op,C,D=A
     if Op == '->' : 
-      Vs2 = (('->',D,B),Vs1)
-      if next(ljf(('->',C,D),Vs2),False)  :
-        return B,Vs1
-    elif Op == '&' :     
-      return ('->',C,('->',D,B)),Vs1   
+      if next(ljf(A,(('->',D,B),Vs)),False)  :return B,Vs
+    elif Op == '&' : return ('->',C,('->',D,B)),Vs   
     elif Op == 'v' :
-      return ('->',('->',C,D),('->',('->',D,C),B)),Vs1
+      cb = ('->',C,B)
+      db = ('->',D,B)
+      return cb,(db,Vs)
     else :
       # assert(Op == '<->') 
       cd = ('->',C,D)
-      dc = ('->',D,C)
-      return ('->',cd,('->',dc,B)),Vs1
+      dc= ('->',D,C)
+      dcb=('->',dc,B)
+      return ('->',cd,('->',dc,B)),Vs
   else :   
-    if memb(A,Vs1) : return B,Vs1
+    if memb(A,Vs) : return B,Vs
    
 # helpers    
     

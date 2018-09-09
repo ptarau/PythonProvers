@@ -42,8 +42,10 @@ def allFormTest2(f,generator,transformer,n) :
       provable+=1
     else :
       unprovable+=1
-  total=provable+unprovable   
-  print('total',total,'provable',provable,'unprovable',unprovable)   
+  total=provable+unprovable
+  ratio=provable/total
+  print(n,'provable',provable,'total',
+    total,'unprovable',unprovable,'ratio',ratio)   
     
 
 def proverDiff(n) :
@@ -123,7 +125,8 @@ def bm1() :
   bmf1(allFormTest1,6)
 
 def fbmn(n) :
-  bmf1(fullFormTest,n)
+  for k in range(n) :
+    bmf1(fullFormTest,k)
 
 def fbm() :
   fbmn(5)
