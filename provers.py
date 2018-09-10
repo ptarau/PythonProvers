@@ -79,24 +79,26 @@ def ljf(G,Vs) :
   #print('ljf'),ppp(G,Vs)
  
   if memb(G,Vs) or memb('false',Vs) : yield True  
-  elif isTuple(G) :
+  elif isTuple(G) and not G[0] == 'v'  :
     Op,A,B = G
+    
     if Op == '<->' :
        if ljf_holds(B, (A,Vs)) and ljf_holds(A, (B,Vs)) : yield True
     elif Op == '->' : 
        if ljf_holds(B,(A,Vs)) : yield True         
     elif Op == '&' :
        if ljf_holds(A,Vs) and ljf_holds(B,Vs) : yield True
-    elif Op == 'v' :
-       if ljf_holds(A,Vs) or ljf_holds(B,Vs) : yield True
     else:
        raise ValueError('unexpected operator: '+Op)
-  else : # isVar(G) or 'false'
+  else : # isVar(G) or 'false' or
     for V,Vs1 in selectFirst(Vs) :
       if isTuple(V) :
         Vs2 = ljf_reduce(V,G,Vs1)
         if Vs2  and ljf_holds(G,Vs2) : yield True
-
+    if isTuple(G) and G[0] == 'v' :
+       Op,A,B = G
+       if ljf_holds(A,Vs) or ljf_holds(B,Vs) : yield True
+         
 def ljf_reduce(V,G,Vs) :        
       Op,A,B=V
       if Op=='->' : return ljf_imp(A,B,Vs)

@@ -5,6 +5,7 @@ from buggy import gprove, ljg
 import gs
 import timeit
 import trace
+from yes import yes
 
 # tests    
     
@@ -32,14 +33,20 @@ def allFormTest1(n) :
 
 def buggyTest(n) :
   return allFormTest2(gprove,iFormula,identity,n) 
-  
+
+yes_py = []
+
 def allFormTest2(f,generator,transformer,n) :
+  global yes_py
+  yes_py=[]
   provable = 0
   unprovable = 0
+  
   for t0 in generator(n) :
     t = transformer(t0)
     if(f(t)) :
       provable+=1
+      yes_py.append(provable+unprovable)
     else :
       unprovable+=1
   total=provable+unprovable
@@ -58,7 +65,25 @@ def proverDiff(n) :
     if(i and not f) :
      print('should_be_provable',t) 
     
+
+def fixYes() :
+  return list(list2tuple(yes))
   
+def list2tuple(xs) :
+  if isinstance(xs,list) :
+    g=map(list2tuple,xs) 
+    return tuple(g)
+  else :
+    return xs
+
+def testYes() :
+  for x in list2tuple(yes) :
+    y = expandNeg(x)
+    if not fprove(y) :
+      #print(x)
+      print(y)
+      print('')
+      
 # tests -----------------------------------
 
 t1 = ishow(((0,1),(0,(0,2))))
@@ -139,11 +164,13 @@ def t1() :
   return fprove(x)
   
 def t2() :
-  x= ('->', ('->', ('<->', ('->', 1, 2), ('<->', 1, 1)), 2), 2)
+  x= ('->', ('v', 0, 1), ('v', 1, 0))
   return fprove(x)
 
 def t3() :
   g=1
   vs=(0, (0, (0, (0, (('->', 1, 1), (0, (0, (('->', 1, 1), (0, (0, (0, (('->', 1, 1), (0, (0, (0, (0, (('->', 1, 1), (0, (0, (0, (0, (('->', 1, 1), (0, (0, (0, None)))))))))))))))))))))))))
   return next(ljf(g,vs),False)
+  
+  
   
