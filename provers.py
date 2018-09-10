@@ -17,7 +17,9 @@ ljb_imp(A,_,Vs):-memberchk(A,Vs).
 # prover restricted to implicational logic
 # >>> allFormTest(6)
 # total 115764 provable 27406 unprovable 88358
-def iprove(G) : return next(ljb(G,None),False)
+def iprove(G) : return ljb_holds(G,None)
+
+def ljb_holds(X,Vs) : return next(ljb(X,Vs),False)
 
 def ljb(G,Vs1) :
   if memb(G,Vs1) :
@@ -38,7 +40,7 @@ def ljb_imp(A,B,Vs1) :
   else :
     C,D=A
     Vs2 = ((D,B),Vs1)
-    return next(ljb((C,D),Vs2),False)
+    return ljb_holds((C,D),Vs2)
 
 # derived from Prolog version   
 '''
@@ -117,7 +119,6 @@ def ljf_imp(A,B,Vs) :
       # assert(Op == '<->') 
       cd = ('->',C,D)
       dc= ('->',D,C)
-      dcb=('->',dc,B)
       return ('->',cd,('->',dc,B)),Vs
   else :   
     if memb(A,Vs) : return B,Vs
@@ -145,7 +146,7 @@ def memb(X,Xs) :
      return memb(X,Ys)
  
     
-# helpers
+# other
 
 def identity(x) : return x
 
