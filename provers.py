@@ -69,54 +69,45 @@ ljf_imp(A,B,Vs,[B|Vs]):-memberchk(A,Vs).
 # full intuitionistic propositional prover
 def fprove(G) :
   #pp(G)
-  return next(ljf(G,None),False)
+  return ljf_holds(G,None)
 
+def ljf_holds(X,Vs) : return next(ljf(X,Vs),False)
+  
 def ljf(G,Vs) :
   #print('ljf'),ppp(G,Vs)
  
-  if memb(G,Vs) : yield True
-  elif memb('false',Vs) : yield True  
+  if memb(G,Vs) or memb('false',Vs) : yield True  
   elif isTuple(G) :
     Op,A,B = G
     if Op == '<->' :
-       for x in ljf(B, (A,Vs)) :
-           for y in ljf(A, (B,Vs)) :  yield True
+       if ljf_holds(B, (A,Vs)) and ljf_holds(A, (B,Vs)) : yield True
     elif Op == '->' : 
-       for R in ljf(B,(A,Vs))  : yield R         
+       if ljf_holds(B,(A,Vs)) : yield True         
     elif Op == '&' :
-       for x in ljf(A,Vs) :
-           for y in ljf(B,Vs) : yield True
+       if ljf_holds(A,Vs) and ljf_holds(B,Vs) : yield True
     elif Op == 'v' :
-       for x in ljf(A,Vs) : yield x
-       for y in ljf(B,Vs) : yield y
+       if ljf_holds(A,Vs) or ljf_holds(B,Vs) : yield True
     else:
        raise ValueError('unexpected operator: '+Op)
   else : # isVar(G) or 'false'
     for V,Vs1 in selectFirst(Vs) :
       if isTuple(V) :
-        #ppp(V,Vs1)
         Vs2 = ljf_reduce(V,G,Vs1)
-        if Vs2 :
-          for R in ljf(G,Vs2) : yield R
-           
+        if Vs2  and ljf_holds(G,Vs2) : yield True
+
 def ljf_reduce(V,G,Vs) :        
-        Op,A,B=V
-        if Op=='->' : 
-          #print('ljf_reduce'),ppp(G,Vs)
-          return ljf_imp(A,B,Vs)
-        elif  Op == '&' :
-          return A,(B,Vs)
-        elif Op == '<->' :
-          return ('->',A,B),(('->',B,A),Vs)
-        elif Op == 'v' :
-          if next(ljf(G,(A,Vs)),False) :
-            return B,Vs
+      Op,A,B=V
+      if Op=='->' : return ljf_imp(A,B,Vs)
+      elif Op == '&' :return A,(B,Vs)
+      elif Op == '<->' : return ('->',A,B),(('->',B,A),Vs)
+      elif Op == 'v' :
+        if ljf_holds(G,(A,Vs)) : return B,Vs
           
 def ljf_imp(A,B,Vs) :
   if isTuple(A) :
     Op,C,D=A
-    if Op == '->' : 
-      if next(ljf(A,(('->',D,B),Vs)),False)  :return B,Vs
+    if Op == '->' :
+      if ljf_holds(A,(('->',D,B),Vs)) : return B,Vs
     elif Op == '&' : return ('->',C,('->',D,B)),Vs   
     elif Op == 'v' :
       cb = ('->',C,B)
