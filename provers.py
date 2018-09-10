@@ -17,30 +17,25 @@ ljb_imp(A,_,Vs):-memberchk(A,Vs).
 # prover restricted to implicational logic
 # >>> allFormTest(6)
 # total 115764 provable 27406 unprovable 88358
-def iprove(G) : return ljb_holds(G,None)
-
-def ljb_holds(X,Vs) : return next(ljb(X,Vs),False)
+def iprove(G) : return any(ljb(G,None))
 
 def ljb(G,Vs1) :
-  if memb(G,Vs1) :
-    yield True
+  if memb(G,Vs1) : yield True
   elif isTuple(G) :
     A,B = G
-    for R in ljb(B,(A,Vs1))  : yield R 
-  else : # isVar(G)
+    yield any(ljb(B,(A,Vs1)))
+  else : # atomic G
     for V,Vs2 in selectFirst(Vs1) :
       if isTuple(V) :
         A,B=V
         if ljb_imp(A,B,Vs2) :
-          for R in ljb(G,(B,Vs2)) : yield R
+          yield any(ljb(G,(B,Vs2)))
  
 def ljb_imp(A,B,Vs1) :
-  if not isTuple(A) :
-    return memb(A,Vs1)
+  if not isTuple(A) : return memb(A,Vs1)
   else :
     C,D=A
-    Vs2 = ((D,B),Vs1)
-    return ljb_holds((C,D),Vs2)
+    return any(ljb((C,D),((D,B),Vs1)))
 
 # derived from Prolog version   
 '''
@@ -71,10 +66,8 @@ ljf_imp(A,B,Vs,[B|Vs]):-memberchk(A,Vs).
 # full intuitionistic propositional prover
 def fprove(G) :
   #pp(G)
-  return ljf_holds(G,None)
+  return any(ljf(G,None))
 
-def ljf_holds(X,Vs) : return next(ljf(X,Vs),False)
-  
 def ljf(G,Vs) :
   #print('ljf'),ppp(G,Vs)
  
@@ -83,21 +76,21 @@ def ljf(G,Vs) :
     Op,A,B = G
     
     if Op == '<->' :
-       if ljf_holds(B, (A,Vs)) and ljf_holds(A, (B,Vs)) : yield True
+       if any(ljf(B, (A,Vs))) and any(ljf(A, (B,Vs))) : yield True
     elif Op == '->' : 
-       if ljf_holds(B,(A,Vs)) : yield True         
+       if any(ljf(B,(A,Vs))) : yield True         
     elif Op == '&' :
-       if ljf_holds(A,Vs) and ljf_holds(B,Vs) : yield True
+       if any(ljf(A,Vs)) and any(ljf(B,Vs)) : yield True
     else:
        raise ValueError('unexpected operator: '+Op)
-  else : # isVar(G) or 'false' or
+  else : # G is atomic, or 'false' or 'v'
     for V,Vs1 in selectFirst(Vs) :
       if isTuple(V) :
         Vs2 = ljf_reduce(V,G,Vs1)
-        if Vs2  and ljf_holds(G,Vs2) : yield True
+        if Vs2  and any(ljf(G,Vs2)) : yield True
     if isTuple(G) and G[0] == 'v' :
        Op,A,B = G
-       if ljf_holds(A,Vs) or ljf_holds(B,Vs) : yield True
+       if any(ljf(A,Vs)) or any(ljf(B,Vs)) : yield True
          
 def ljf_reduce(V,G,Vs) :        
       Op,A,B=V
@@ -105,13 +98,13 @@ def ljf_reduce(V,G,Vs) :
       elif Op == '&' :return A,(B,Vs)
       elif Op == '<->' : return ('->',A,B),(('->',B,A),Vs)
       elif Op == 'v' :
-        if ljf_holds(G,(A,Vs)) : return B,Vs
+        if any(ljf(G,(A,Vs))) : return B,Vs
           
 def ljf_imp(A,B,Vs) :
   if isTuple(A) :
     Op,C,D=A
     if Op == '->' :
-      if ljf_holds(A,(('->',D,B),Vs)) : return B,Vs
+      if any(ljf(A,(('->',D,B),Vs))) : return B,Vs
     elif Op == '&' : return ('->',C,('->',D,B)),Vs   
     elif Op == 'v' :
       cb = ('->',C,B)

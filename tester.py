@@ -5,7 +5,7 @@ from buggy import gprove, ljg
 import gs
 import timeit
 import trace
-from yes import yes
+#from yes import yes
 
 # tests    
     
