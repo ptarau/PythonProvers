@@ -1,6 +1,7 @@
+import signal
 from formulas import iFormula,iCounts,fCounts,ranLBin,binOp,opTree,fFormula,expandNeg,genListPartition
 from remy import ranBin0
-from provers import iprove, ljb, fprove, ljf, isTuple, ishow, to_triplet,fromList, toList, identity, selectFirst
+from provers import iprove, ljb, fprove, ljf, isTuple, ishow, to_triplet,fromList, toList, identity, selectFirst, pp, ppp
 from buggy import gprove, ljg
 import gs
 import timeit
@@ -83,7 +84,51 @@ def testYes() :
       #print(x)
       print(y)
       print('')
+
+def load_iltp() :
+  f=open('iltp.txt','r')
+  for line in f :
+    try :
+      yield(eval(line))
+    except MemoryError as e :
+      pass
+  f.close()
+  
+def store_iltp() :
+  iltp=[]
+  for l in load_iltp() :
+      iltp.append(l)
+  return iltp
+   
+
+def test_iltp() :  
+  ls = store_iltp()
+  ts = list2tuple(ls)
+  provable=0
+  unprovable=0
+  wrong=0
+  timed_out=0
+  max_time=6
+  for t in ts :
+    N,TF,FN,G = t
+    g = expandNeg(G)
+    print(N,FN)
+    R=fprove(g)
+    if R==TF :
+      print('ok',R)
+      if(R==True) : provable+=1
+      elif(R==False) : 
+        unprovable+1
+      else :
+        timed_out+=1
+    else :
+      print(N,wrong,'res',R,'should_be',TF)
+      pp(g)
+      wrong+=1
+  print('pr',provable,'np',unprovable,'to',timed_out,'wr',wrong)
+  
       
+  
 # tests -----------------------------------
 
 t1 = ishow(((0,1),(0,(0,2))))

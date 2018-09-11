@@ -1,3 +1,5 @@
+import signal
+
 #from tester import ishow,fshow
 
 # derived from Prolog version
@@ -64,14 +66,35 @@ ljf_imp(A,B,Vs,[B|Vs]):-memberchk(A,Vs).
 '''
 
 # full intuitionistic propositional prover
+
+
+def timeout_handler(no,frame) :
+  global timeout
+  timeout=True
+  
+signal.signal(signal.SIGALRM, timeout_handler)
+
+timeout = False  
+  
 def fprove(G) :
   #pp(G)
-  return any(ljf(G,None))
-
+  global timeout
+  signal.alarm(10)
+  timeout = False
+  try :
+    return any(ljf(G,None))
+  except Exception:
+    return 'timeout'
+  finally :
+    signal.alarm(0)
+    
+    
 def ljf(G,Vs) :
   #print('ljf'),ppp(G,Vs)
- 
-  if memb(G,Vs) or memb('false',Vs) : yield True  
+  global timeout
+  if timeout :
+    raise(Exception('timeout'))
+  elif memb(G,Vs) or memb('false',Vs) : yield True  
   elif isTuple(G) and not G[0] == 'v'  :
     Op,A,B = G
     
