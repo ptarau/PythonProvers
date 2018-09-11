@@ -1,7 +1,7 @@
 import signal
 from formulas import iFormula,iCounts,fCounts,ranLBin,binOp,opTree,fFormula,expandNeg,genListPartition
 from remy import ranBin0
-from provers import iprove, ljb, fprove, ljf, isTuple, ishow, to_triplet,fromList, toList, identity, selectFirst, pp, ppp
+from provers import iprove, ljb,fprove,ljf,isTuple,ishow,to_triplet,fromList, toList,identity,selectFirst,pp,ppp,set_max_time,get_max_time
 from buggy import gprove, ljg
 import gs
 import timeit
@@ -101,31 +101,40 @@ def store_iltp() :
   return iltp
    
 
-def test_iltp() :  
+def test_iltp(time) :  
+  set_max_time(time)
   ls = store_iltp()
   ts = list2tuple(ls)
   provable=0
   unprovable=0
   wrong=0
   timed_out=0
-  max_time=6
+  print('max_time',get_max_time())
   for t in ts :
     N,TF,FN,G = t
     g = expandNeg(G)
     print(N,FN)
     R=fprove(g)
     if R==TF :
-      print('ok',R)
-      if(R==True) : provable+=1
-      elif(R==False) : unprovable+1
+      if(R==True) : 
+        provable+=1
+        print('  ok:',R,'at:',provable)    
+      elif(R==False) : 
+        unprovable+=1
+        print('  ok:',R,'at:',unprovable)     
     elif R=='timeout':
         timed_out+=1
-        print(N,'should_be:',TF,'TIMED OUT!')
+        print('  should_be:',TF,'TIMED OUT!','at:',timed_out)
     else :
-      print(N,'WRONG result:',R,'should_be:',TF)
-      #pp(g)
       wrong+=1
-  print('pr',provable,'np',unprovable,'to',timed_out,'wr',wrong)
+      print(N,'  WRONG result:',R,'should_be:',TF,'at:',wrong)
+      #pp(g)  
+  print('max_time:',get_max_time())  
+  right=provable+unprovable
+  total=right+wrong+timed_out
+  print('provable',provable,'unprovable',unprovable,
+  'timed_out',timed_out,'wrong',wrong,
+  'RIGHT:',right,'total_tried',total)
   
       
   

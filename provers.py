@@ -70,20 +70,28 @@ ljf_imp(A,B,Vs,[B|Vs]):-memberchk(A,Vs).
 
 timeout = False
 
-
 def timeout_handler(no,frame) :
   global timeout
   timeout=True
   
 signal.signal(signal.SIGALRM, timeout_handler)
 
-  
+#max_time = 6
+
+def set_max_time(t) :
+  global max_time
+  max_time=t
+
+def get_max_time() :
+  global max_time
+  return max_time
   
 def fprove(G) :
   #pp(G)
   global timeout
-  signal.alarm(4)
   timeout = False
+  time=get_max_time()
+  signal.alarm(time)  
   try :
     return any(ljf(G,None))
   except Exception:
