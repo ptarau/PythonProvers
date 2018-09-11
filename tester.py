@@ -2,8 +2,6 @@ import signal
 from formulas import iFormula,iCounts,fCounts,ranLBin,binOp,opTree,fFormula,expandNeg,genListPartition
 from remy import ranBin0
 from provers import iprove, ljb,fprove,ljf,isTuple,ishow,to_triplet,fromList, toList,identity,selectFirst,pp,ppp,set_max_time,get_max_time
-from buggy import gprove, ljg
-import gs
 import timeit
 import trace
 #from yes import yes
@@ -32,13 +30,8 @@ def fullFormTest(n) :
 def allFormTest1(n) :
   return allFormTest2(fprove,iFormula,to_triplet,n)  
 
-def buggyTest(n) :
-  return allFormTest2(gprove,iFormula,identity,n) 
-
-yes_py = []
 
 def allFormTest2(f,generator,transformer,n) :
-  global yes_py
   yes_py=[]
   provable = 0
   unprovable = 0
@@ -187,17 +180,6 @@ def ranTestProver(K,N) :
 def rbm() :
   bmf2(ranTestProver,16,60)
     
-def proveGs() :
-  succ=0
-  fail=0
-  for g in gs.gs: 
-    if(iprove(g)) :
-      succ+=1; 
-    else :
-      fail+=1
-  return succ,fail     
- 
- 
 def bm() :
   bmf1(allFormTest,6)
 

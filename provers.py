@@ -67,7 +67,8 @@ ljf_imp(A,B,Vs,[B|Vs]):-memberchk(A,Vs).
 
 # full intuitionistic propositional prover
 
-
+# defaults when no timeout is needed
+max_time = 60
 timeout = False
 
 def timeout_handler(no,frame) :
@@ -75,8 +76,6 @@ def timeout_handler(no,frame) :
   timeout=True
   
 signal.signal(signal.SIGALRM, timeout_handler)
-
-#max_time = 6
 
 def set_max_time(t) :
   global max_time
@@ -106,8 +105,7 @@ def ljf(G,Vs) :
   if timeout : raise(Exception('timeout'))
   elif memb(G,Vs) or memb('false',Vs) : yield True  
   elif isTuple(G) and not G[0] == 'v'  :
-    Op,A,B = G
-    
+    Op,A,B = G    
     if Op == '<->' :
        if any(ljf(B, (A,Vs))) and any(ljf(A, (B,Vs))) : yield True
     elif Op == '->' : 
