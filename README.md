@@ -1,7 +1,7 @@
 # PythonProvers
 Intuitionistic Theorem Provers and Formula Generators in Python
 
-## Tested with python 3.7.0
+## Tested with python 3.7.0 and pypy 3.5
 
 ## Main components:
 

@@ -159,8 +159,8 @@ def selectFirst(Xs) :
       yield (Z,(X,Zs))
       
 def isTuple(i) : return isinstance(i,tuple)
-#def isVar(i) : return  isinstance(i,int)
 
+'''
 def memb(X,Xs) :
  if not Xs :
    return False
@@ -170,8 +170,16 @@ def memb(X,Xs) :
      return True
    else :
      return memb(X,Ys)
- 
-    
+'''
+
+def memb(X,Xs) :
+  Ys=Xs
+  while Ys :
+    Y,Zs = Ys
+    Ys=Zs
+    if Y==X : return True
+  return False
+  
 # other
 
 def identity(x) : return x

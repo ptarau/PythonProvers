@@ -179,12 +179,21 @@ def ranTestProver(K,N) :
   
 def rbm() :
   bmf2(ranTestProver,16,60)
-    
-def bm() :
-  bmf1(allFormTest,6)
+  
+def bm() : 
+  bmn(8)
+  
+def bmn(n) :
+  for k in range(n) :
+    bmf1(allFormTest,k)
 
 def bm1() :
-  bmf1(allFormTest1,6)
+  bmf1(allFormTest1,7)
+
+#8 provable 31839 total 332193 unprovable 300354 ratio 0.0958448853527919
+#  time =  13.916768707000003
+#9 provable 115623 total 2100961 unprovable 1985338 ratio 0.05503338710237839
+#  time =  3692.055582994
 
 def fbmn(n) :
   for k in range(n) :
