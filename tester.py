@@ -100,7 +100,8 @@ def store_iltp() :
       iltp.append(l)
   return iltp
    
-
+# max_time: 30, same at 60
+#provable 95 unprovable 50 timed_out 99 wrong 0 RIGHT: 145 total_tried 244
 def test_iltp(time) :  
   set_max_time(time)
   ls = store_iltp()
