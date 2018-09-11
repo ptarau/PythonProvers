@@ -117,13 +117,13 @@ def test_iltp() :
     if R==TF :
       print('ok',R)
       if(R==True) : provable+=1
-      elif(R==False) : 
-        unprovable+1
-      else :
+      elif(R==False) : unprovable+1
+    elif R=='timeout':
         timed_out+=1
+        print(N,'should_be:',TF,'TIMED OUT!')
     else :
-      print(N,wrong,'res',R,'should_be',TF)
-      pp(g)
+      print(N,'WRONG result:',R,'should_be:',TF)
+      #pp(g)
       wrong+=1
   print('pr',provable,'np',unprovable,'to',timed_out,'wr',wrong)
   

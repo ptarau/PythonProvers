@@ -68,18 +68,21 @@ ljf_imp(A,B,Vs,[B|Vs]):-memberchk(A,Vs).
 # full intuitionistic propositional prover
 
 
+timeout = False
+
+
 def timeout_handler(no,frame) :
   global timeout
   timeout=True
   
 signal.signal(signal.SIGALRM, timeout_handler)
 
-timeout = False  
+  
   
 def fprove(G) :
   #pp(G)
   global timeout
-  signal.alarm(10)
+  signal.alarm(4)
   timeout = False
   try :
     return any(ljf(G,None))
@@ -92,8 +95,7 @@ def fprove(G) :
 def ljf(G,Vs) :
   #print('ljf'),ppp(G,Vs)
   global timeout
-  if timeout :
-    raise(Exception('timeout'))
+  if timeout : raise(Exception('timeout'))
   elif memb(G,Vs) or memb('false',Vs) : yield True  
   elif isTuple(G) and not G[0] == 'v'  :
     Op,A,B = G
