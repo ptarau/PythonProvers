@@ -1,7 +1,5 @@
 import signal
 
-#from tester import ishow,fshow
-
 # derived from Prolog version
 '''
 ljb(A,Vs):-memberchk(A,Vs),!.

@@ -1,10 +1,15 @@
-import signal
-from formulas import iFormula,iCounts,fCounts,ranLBin,binOp,opTree,fFormula,expandNeg,genListPartition
+from formulas import (
+  iFormula,iCounts,fCounts,ranLBin,binOp,opTree,
+  fFormula,expandNeg,genListPartition 
+)
 from remy import ranBin0
-from provers import iprove, ljb,fprove,tprove,cprove,ljf,isTuple,ishow,to_triplet,fromList, toList,identity,selectFirst,pp,ppp,set_max_time,get_max_time
+from provers import (
+   iprove, ljb,fprove,tprove,cprove,ljf,
+   isTuple,ishow,to_triplet,fromList, toList,identity,selectFirst,
+   pp,ppp,set_max_time,get_max_time
+)
 import timeit
 import trace
-#from yes import yes
 
 # tests    
     
