@@ -179,6 +179,15 @@ def memb(X,Xs) :
     Ys=Zs
     if Y==X : return True
   return False
+ 
+ 
+def tprove(x) :
+  from sat import classical_tautology as ct
+  return ct(x) and fprove(x)
+
+def cprove(x) :
+  from sat import classical_tautology as ct
+  return ct(x)
   
 # other
 

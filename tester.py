@@ -1,7 +1,7 @@
 import signal
 from formulas import iFormula,iCounts,fCounts,ranLBin,binOp,opTree,fFormula,expandNeg,genListPartition
 from remy import ranBin0
-from provers import iprove, ljb,fprove,ljf,isTuple,ishow,to_triplet,fromList, toList,identity,selectFirst,pp,ppp,set_max_time,get_max_time
+from provers import iprove, ljb,fprove,tprove,cprove,ljf,isTuple,ishow,to_triplet,fromList, toList,identity,selectFirst,pp,ppp,set_max_time,get_max_time
 import timeit
 import trace
 #from yes import yes
@@ -23,6 +23,9 @@ def allFormTest(n) :
 
 def fullFormTest(n) :
   return allFormTest2(fprove,fFormula,expandNeg,n)   
+  
+def fullFormTest1(n) :
+  return allFormTest2(tprove,fFormula,expandNeg,n) 
   
 # try fprove on all implicational formulas of size n
 # fprove covers full untuitionistic propositional logic
@@ -95,7 +98,17 @@ def store_iltp() :
    
 # max_time: 30, same at 60
 #provable 95 unprovable 50 timed_out 99 wrong 0 RIGHT: 145 total_tried 244
-def test_iltp(time) :  
+def test_iltp(time) :
+  test_iltp_with(fprove,time)
+
+def test_iltp1(time) :
+  test_iltp_with(tprove,time)
+
+def test_iltp2(time) :
+  test_iltp_with(cprove,time)
+
+  
+def test_iltp_with(prover,time) :  
   set_max_time(time)
   ls = store_iltp()
   ts = list2tuple(ls)
@@ -108,7 +121,7 @@ def test_iltp(time) :
     N,TF,FN,G = t
     g = expandNeg(G)
     print(N,FN)
-    R=fprove(g)
+    R=prover(g)
     if R==TF :
       if(R==True) : 
         provable+=1
@@ -199,6 +212,10 @@ def fbmn(n) :
   for k in range(n) :
     bmf1(fullFormTest,k)
 
+def fbmn1(n) :
+  for k in range(n) :
+    bmf1(fullFormTest1,k)
+    
 def fbm() :
   fbmn(5)
    
