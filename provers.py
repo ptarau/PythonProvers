@@ -63,6 +63,9 @@ ljf_imp((C <-> D),B,Vs,[((C->D)->((D->C)->B))|Vs]):-!.
 ljf_imp(A,B,Vs,[B|Vs]):-memberchk(A,Vs).  
 '''
 
+def timed_call(g,t) :
+  
+
 # full intuitionistic propositional prover
 
 # defaults when no timeout is needed
