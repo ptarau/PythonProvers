@@ -1,4 +1,11 @@
+from syntax import expr as expr
 import signal
+
+def fp(g) : return fprove(g.run())
+  
+x=expr(0)
+y=expr(1)
+z=expr(2)
 
 # derived from Prolog version
 '''
@@ -13,6 +20,8 @@ ljb(G,Vs1):-
 ljb_imp((C->D),B,Vs):-!,ljb((C->D),[(D->B)|Vs]).
 ljb_imp(A,_,Vs):-memberchk(A,Vs).   
 '''
+
+
 
 # prover restricted to implicational logic
 # >>> allFormTest(6)
@@ -63,7 +72,7 @@ ljf_imp((C <-> D),B,Vs,[((C->D)->((D->C)->B))|Vs]):-!.
 ljf_imp(A,B,Vs,[B|Vs]):-memberchk(A,Vs).  
 '''
 
-def timed_call(g,t) :
+#def timed_call(g,t) :
   
 
 # full intuitionistic propositional prover

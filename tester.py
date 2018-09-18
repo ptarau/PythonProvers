@@ -6,8 +6,13 @@ from remy import ranBin0
 from provers import (
    iprove, ljb,fprove,tprove,cprove,ljf,
    isTuple,ishow,to_triplet,fromList, toList,identity,selectFirst,
-   pp,ppp,set_max_time,get_max_time
+   pp,ppp,set_max_time,get_max_time, fp as fp
 )
+from syntax import expr as expr, syntest as syntest
+x=expr(0)
+y=expr(1)
+z=expr(2)
+
 import timeit
 import trace
 
