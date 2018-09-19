@@ -1,5 +1,5 @@
 # PythonProvers
-Intuitionistic Theorem Provers and Formula Generators in Python
+Intuitionistic (and classical) Propositional Theorem Provers and Formula Generators in Python
 
 ## Tested with python 3.7.0 and pypy 3.5
 
@@ -11,6 +11,16 @@ Intuitionistic Theorem Provers and Formula Generators in Python
 * an implicational propositional intuitionistic logic theorem prover
 * a generator for closed lambda terms and a type inference algorithm for generating simply-typed terms of a given size
 * tests on a Python-readable version of the ILTP propositional logic tests
+
+## Dependecies:
+The addition of a SAT-based classical propositional tautology prover
+needs the *pycosat* package, install it with something like
+
+```
+pip3 install pycosat
+```
+If not interested inthat, just comment out the pycosat import statements.
+We have no dependencies for the intuitionistic provers.
 
 ## Examples of use
 

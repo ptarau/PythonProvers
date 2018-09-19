@@ -40,6 +40,9 @@ def fullFormTest(n) :
 def fullFormTest1(n) :
   return allFormTest2(tprove,fFormula,expandNeg,n) 
   
+def fullFormTest2(n) :
+  return allFormTest2(cprove,fFormula,identity,n) 
+  
 # try fprove on all implicational formulas of size n
 # fprove covers full untuitionistic propositional logic
 # but this shows that it covers the implicational subset
@@ -114,6 +117,8 @@ def store_iltp() :
 def test_iltp(time) :
   test_iltp_with(fprove,time)
 
+#6s: provable 93 unprovable 48 timed_out 103 wrong 0 RIGHT: 141 total_tried 244
+#60s provable 95 unprovable 50 timed_out 99 wrong 0 RIGHT: 145 total_tried 244
 def test_iltp1(time) :
   test_iltp_with(tprove,time)
 
@@ -225,9 +230,20 @@ def fbmn(n) :
   for k in range(n) :
     bmf1(fullFormTest,k)
 
+# 9 provable 115595 total 2100961 unprovable 1985366 ratio 0.055020059867841434
+# time =  133.74231457099995    
 def fbmn1(n) :
   for k in range(n) :
     bmf1(fullFormTest1,k)
+
+# 8 provable 42750 total 332193 unprovable 289443 ratio 0.1286902493430024
+# time =  38.038104126026155
+# 9 provable 207411 total 2100961 unprovable 1893550 ratio 0.09872196580517201
+# time =  203.22815937400446
+def fbmn2(n) :
+  for k in range(n) :
+    bmf1(fullFormTest2,k)
+
     
 def fbm() :
   fbmn(5)
