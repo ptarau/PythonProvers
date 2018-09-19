@@ -267,7 +267,8 @@ def t5() :
   
   
 def t6() :
-  x=('->',('->',0,0),'false')
+  #x=('->',('->',0,0),'false')
+  x=('~',('->',0,0))
   y=is_sat(x)
   print('res',y)
   a=to_cnf(x)
@@ -280,8 +281,8 @@ def t6() :
   
   
 def t7() :
-  p=expr(0)
-  q=expr(1)
+  p=expr('p')
+  q=expr('q')
   t=(~(p>>q) >> (q>>p)).run()
   ir=fprove(t)
   print(ir)

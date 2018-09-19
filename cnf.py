@@ -23,8 +23,15 @@ def fixVars(t) :
   def fv(u) :
     nonlocal k
     if isinstance(u,tuple) :
-      op,x,y=u
-      return (op,fv(x),fv(y))
+      if(len(u)==2) :
+        op,x=u
+        return (op,fv(x))
+      else :
+        op,x,y=u
+        if(y=='false') :
+          return ('~',fv(x))
+        else :
+          return (op,fv(x),fv(y))
     else :
       if u in d :
         return d[u]
@@ -41,6 +48,16 @@ def tseitin(t,l) :
     nonlocal v 
     if isinstance(t,tuple) :
       #print('enter_ts',t)
+      if len(t)==2 :
+        op,x=t
+        a=ts(x)
+        if isinstance(a,tuple) :
+          i=v
+          v+=1
+          eqs.append((i,a))
+        else :
+         i=a
+        return (op,i)
       op,x,y=t
       a=ts(x)
       b=ts(y)
@@ -71,6 +88,10 @@ def tseitin(t,l) :
 def small_to_cnf(Ct) :
   C,t=Ct
   #print('Ct',Ct)
+  if len(t)==2 :
+    op,A=t
+    assert(op=='~')
+    return [(-A,-C),(A,C)]
   op,A,B=t
   if op == '&' :
     r=[(-A,-B,C),(A,-C),(B,-C)]
