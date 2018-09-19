@@ -278,3 +278,16 @@ def t6() :
   print('fshow',fshow(b))
   print('res',fprove(b))
   
+  
+def t7() :
+  p=expr(0)
+  q=expr(1)
+  t=(~(p>>q) >> (q>>p)).run()
+  ir=fprove(t)
+  print(ir)
+  print(t)
+  cr=is_taut(t)
+  print('bug',cr)
+  
+  
+  
