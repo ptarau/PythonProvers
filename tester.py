@@ -1,17 +1,20 @@
 from formulas import (
   iFormula,iCounts,fCounts,ranLBin,binOp,opTree,
-  fFormula,expandNeg,genListPartition 
+  fFormula,expandNeg,genListPartition
 )
+from cnf import tseitin,to_cnf,fixVars, from_cnf
 from remy import ranBin0
 from provers import (
    iprove, ljb,fprove,tprove,cprove,ljf,
-   isTuple,ishow,to_triplet,fromList, toList,identity,selectFirst,
+   isTuple,ishow,fshow,to_triplet,fromList, toList,identity,selectFirst,
    pp,ppp,set_max_time,get_max_time, fp as fp
 )
+from sat import classical_tautology as classical_tautology,is_taut,is_sat
 from syntax import expr as expr, syntest as syntest
-x=expr(0)
-y=expr(1)
-z=expr(2)
+
+xx=expr(0)
+yy=expr(1)
+zz=expr(2)
 
 import timeit
 import trace
@@ -245,5 +248,33 @@ def t3() :
   vs=(0, (0, (0, (0, (('->', 1, 1), (0, (0, (('->', 1, 1), (0, (0, (0, (('->', 1, 1), (0, (0, (0, (0, (('->', 1, 1), (0, (0, (0, (0, (('->', 1, 1), (0, (0, (0, None)))))))))))))))))))))))))
   return next(ljf(g,vs),False)
   
+def t4() :
+  a=expr(0)
+  t = a >> (a | ~a)
+  print(t, '--->',fp(t))
   
+def t5() :
+  p=expr(0)
+  q=expr(1)
+  r=expr(2)
+  s=expr(3)
+  t= (((p | q) & r) >> (~s)).run()  
+  print(t)
+  res=to_cnf(t)
+  l=len(res)
+  print(res)
+  print('len',l)
+  
+  
+def t6() :
+  x=('->',('->',0,0),'false')
+  y=is_sat(x)
+  print('res',y)
+  a=to_cnf(x)
+  b=from_cnf(a)
+  print('form',x)
+  print('cnf',a)
+  print('from',b)
+  print('fshow',fshow(b))
+  print('res',fprove(b))
   

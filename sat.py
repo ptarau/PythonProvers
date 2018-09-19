@@ -1,48 +1,36 @@
-from pyeda.inter import *
+import pycosat
+from cnf import to_cnf as to_cnf
 
+def picotest() :
+  cnf = [[1, -5, 4], [-1, 5, 3, 4], [-3, -4]]
+  print(pycosat.solve(cnf))
+  for sol in pycosat.itersolve(cnf) :
+    print(sol)
+    
+    
 # need to import only this
 def classical_tautology(t) :
-  x = tuple2expr(t)
-  return is_taut(x)
+  return is_taut(t)
   
 def is_sat(t) :
-  #cnf = t.tseitin()
-  cnf=t.to_cnf()
-  return not None == cnf.satisfy_one()
+  cnf=to_cnf(t)
+  #print('cnf',cnf)
+  sol=pycosat.solve(cnf)
+  #print('sol',sol)
+  return 'UNSAT' != pycosat.solve(cnf)
+  
+def is_taut1(t) :
+  nt = ('->',t,'false')
+  return not is_sat(nt)
+  
   
 def is_taut(t) :
-  return not(is_sat(Not(t)))
+  cnf=to_cnf(t)
+  #print('cnf',cnf)
+  last=cnf[-1]
+  #print('last',last)
+  last[0] = -last[0] 
+  sol=pycosat.solve(cnf)
+  #print('sol',sol)
+  return 'UNSAT' == pycosat.solve(cnf)
   
-def tuple2expr(t) :
-  return t2e(t,True) 
-  
-def t2e(t,simp) :  
-  if isinstance(t,tuple) :
-    l=len(t)
-    if l==2 : 
-      op,x=t
-      assert(op=='~')
-      a=t2e(x,simp)
-      return Not(a,simplify=simp)
-    elif l==3 :
-      op,x,y=t 
-      a=t2e(x,simp)
-      b=t2e(y,simp)
-      if(op=='->') : 
-        return Implies(a,b,simplify=simp)
-      elif op=='<->' : 
-        return Equal(a,b,simplify=simp)
-      elif(op=='&') :
-        return And(a,b,simplify=simp)
-      elif(op=='v') :
-        return Or(a,b,simplify=simp)
-      else :
-        raise "bad op="+op
-  elif t=='false' :
-    return expr(False)
-  else :
-    if isinstance(t,int) :
-      return exprvar('X',t)
-    else :
-      return exprvar(t)
-      

@@ -223,8 +223,7 @@ def showFor(mes,f,n) :
   for t in f(n) :
     print(t)
   print("")
-
- 
+  
 # tests
  
 def go() :  
