@@ -77,7 +77,7 @@ ljf_imp(A,B,Vs,[B|Vs]):-memberchk(A,Vs).
 # full intuitionistic propositional prover
 
 # defaults when no timeout is needed
-max_time = 60
+max_time = 30
 timeout = False
 
 def timeout_handler(no,frame) :
@@ -103,35 +103,58 @@ def fprove(G) :
   try :
     return any(ljf(G,None))
   except Exception:
+    print('timeout',get_max_time(),fshow(G))
+    print(G)
     return 'timeout'
   finally :
     signal.alarm(0)
-       
+
+max_steps = 35 
+steps = 0
+
+def spy(Mes,G,Vs) :
+  global steps
+  global max_steps
+  if steps<max_steps :
+    print(Mes,':',steps)
+    ppp(G,Vs)
+    steps+=1
+  else :
+    steps=0
+    raise "ended"
+    
+  
+
 def ljf(G,Vs) :
-  #print('ljf'),ppp(G,Vs)
+  #spy('ljf',G,Vs) 
   global timeout
-  if timeout : raise(Exception('timeout'))
+  if timeout : 
+    raise(Exception('timeout')) 
   elif memb(G,Vs) or memb('false',Vs) : yield True  
   elif isTuple(G) and not G[0] == 'v'  :
-    Op,A,B = G    
-    if Op == '<->' :
-       if any(ljf(B, (A,Vs))) and any(ljf(A, (B,Vs))) : yield True
-    elif Op == '->' : 
-       if any(ljf(B,(A,Vs))) : yield True         
+    Op,A,B = G   
+    if Op == '->' : 
+       if any(ljf(B,(A,Vs))) : yield True    
+    elif Op == '<->' :
+       if any(ljf(B, (A,Vs))) and any(ljf(A, (B,Vs))) : yield True      
     elif Op == '&' :
        if any(ljf(A,Vs)) and any(ljf(B,Vs)) : yield True
     else:
        raise ValueError('unexpected operator: '+Op)
-  else : # G is atomic, or 'false' or 'v'
+  else : # G is atomic or 'false' or 'v'
     for V,Vs1 in selectFirst(Vs) :
       if isTuple(V) :
         Vs2 = ljf_reduce(V,G,Vs1)
-        if Vs2  and any(ljf(G,Vs2)) : yield True
+        if Vs2 :
+          if any(ljf(G,Vs2)) : yield True
+          else: break
     if isTuple(G) and G[0] == 'v' :
-       Op,A,B = G
-       if any(ljf(A,Vs)) or any(ljf(B,Vs)) : yield True
+      Op,A,B = G
+      if any(ljf(A,Vs)) or any(ljf(B,Vs)) : yield True   
          
-def ljf_reduce(V,G,Vs) :        
+def ljf_reduce(V,G,Vs) :  
+      #print('reduce',G)
+      #ppp(V,Vs)  
       Op,A,B=V
       if Op=='->' : return ljf_imp(A,B,Vs)
       elif Op == '&' :return A,(B,Vs)
@@ -140,6 +163,7 @@ def ljf_reduce(V,G,Vs) :
         if any(ljf(G,(A,Vs))) : return B,Vs
           
 def ljf_imp(A,B,Vs) :
+  #print('imp',A)
   if isTuple(A) :
     Op,C,D=A
     if Op == '->' :
@@ -152,10 +176,12 @@ def ljf_imp(A,B,Vs) :
     else :
       # assert(Op == '<->') 
       cd = ('->',C,D)
-      dc= ('->',D,C)
+      dc = ('->',D,C)
       return ('->',cd,('->',dc,B)),Vs
-  else :   
-    if memb(A,Vs) : return B,Vs
+  else :  
+    #ppp(A,Vs) 
+    if memb(A,Vs) : 
+      return B,Vs
    
 # helpers    
     
@@ -190,7 +216,13 @@ def memb(X,Xs) :
  
 def tprove(x) :
   from sat import classical_tautology as ct
-  return ct(x) and fprove(x)
+  c=ct(x)
+  i=fprove(x)
+  if i and not c :
+    print('intuitionistic but not classical tautology')
+    print(x)
+    print('')
+  return c and i
 
 def cprove(x) :
   from sat import classical_tautology as ct

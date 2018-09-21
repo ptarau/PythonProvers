@@ -159,9 +159,9 @@ def opTree (n) :
   else :
     for m in opTree(n-1) :
       yield ('~',m)
-    for k in range(0,n-1) :    
+    for k in range(0,n) :    
       for l in opTree(k) :
-        for r in opTree(n-2-k) : 
+        for r in opTree(n-1-k) : 
           for op in binOp() :      
             yield (op,l,r)
           

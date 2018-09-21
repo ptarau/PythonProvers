@@ -5,7 +5,7 @@ def to_cnf(f) :
   
   l = len(d)
   v,Eqs = tseitin(t,l+1)
-  
+  #print('tseitin',v,Eqs)
   def step() :
      for eq in Eqs :
        xs = small_to_cnf(eq)

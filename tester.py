@@ -9,7 +9,7 @@ from provers import (
    isTuple,ishow,fshow,to_triplet,fromList, toList,identity,selectFirst,
    pp,ppp,set_max_time,get_max_time, fp as fp
 )
-from sat import classical_tautology as classical_tautology,is_taut,is_sat
+from sat import is_taut,is_sat
 from syntax import expr as expr, syntest as syntest
 
 xx=expr(0)
@@ -54,18 +54,21 @@ def allFormTest2(f,generator,transformer,n) :
   yes_py=[]
   provable = 0
   unprovable = 0
-  
+  timeout=0
   for t0 in generator(n) :
     t = transformer(t0)
-    if(f(t)) :
+    r = f(t)
+    if(r=='timeout') :
+      timeout+=1
+    if(r) :
       provable+=1
       yes_py.append(provable+unprovable)
     else :
       unprovable+=1
-  total=provable+unprovable
+  total=provable+unprovable+timeout
   ratio=provable/total
-  print(n,'provable',provable,'total',
-    total,'unprovable',unprovable,'ratio',ratio)   
+  print(n,'provable=',provable,'timeout=',timeout,'total=',
+    total,'unprovable=',unprovable,'ratio=',ratio)   
     
 
 def proverDiff(n) :
@@ -221,29 +224,54 @@ def bmn(n) :
 def bm1() :
   bmf1(allFormTest1,7)
 
+#7 provable 2067 total 39369 unprovable 37302 ratio 0.05250323858873733
+#time =  0.9708034329999999
 #8 provable 31839 total 332193 unprovable 300354 ratio 0.0958448853527919
-#  time =  13.916768707000003
+#time =  13.487839
 #9 provable 115623 total 2100961 unprovable 1985338 ratio 0.05503338710237839
-#  time =  3692.055582994
+#time =  3689.393962848
 
+#3 provable= 677 timeout= 0 total= 5649 unprovable= 4972 ratio= 0.11984422021596743
+#time =  0.09846649600001456
+#4 provable= 22026 timeout= 0 total= 222449 unprovable= 200423 ratio= 0.0990159542187198
+#5 provable= 898708 timeout= 0 total= 10548057 unprovable= 9649349 ratio= 0.08520128399002774
+#time =  5955.508686999
 def fbmn(n) :
-  for k in range(n) :
+  for k in range(n+1) :
     bmf1(fullFormTest,k)
 
-# 9 provable 115595 total 2100961 unprovable 1985366 ratio 0.055020059867841434
-# time =  133.74231457099995    
+    
+    
+#7 provable 2067 total 39369 unprovable 37302 ratio 0.05250323858873733
+#time =  2.1764663079993625
+#8 provable 31839 total 332193 unprovable 300354 ratio 0.0958448853527919
+#time =  19.9524740700017
+#9 provable 115595 total 2100961 unprovable 1985366 ratio 0.055020059867841434
+#time =  133.74231457099995
+#10 provable 1422344 total 18159145 unprovable 16736801 ratio 0.07832659522240722
+#time =  5245.611615100999
 def fbmn1(n) :
   for k in range(n) :
     bmf1(fullFormTest1,k)
 
-# 8 provable 42750 total 332193 unprovable 289443 ratio 0.1286902493430024
-# time =  38.038104126026155
-# 9 provable 207411 total 2100961 unprovable 1893550 ratio 0.09872196580517201
-# time =  203.22815937400446
+    
+    
+#7 provable 3997 total 39369 unprovable 35372 ratio 0.1015265818283421
+#time =  5.337907972978428
+#8 provable 42750 total 332193 unprovable 289443 ratio 0.1286902493430024
+#time =  38.038104126026155
+#9 provable 207411 total 2100961 unprovable 1893550 ratio 0.09872196580517201
+#time =  203.22815937400446
+#10 provable 2028230 total 18159145 unprovable 16130915 ratio 0.11169193263229078
+#time =  1747.5175090609991
+#11 provable 12074740 total 129058425 unprovable 116983685 ratio 0.09356026156370652
+#time =  13112.000492635998
 def fbmn2(n) :
   for k in range(n) :
     bmf1(fullFormTest2,k)
 
+    
+    
     
 def fbm() :
   fbmn(5)
@@ -305,6 +333,15 @@ def t7() :
   print(t)
   cr=is_taut(t)
   print('bug',cr)
+  
+def fbug() :
+  b=('->', ('->', ('<->', 0, ('->', ('<->', ('<->', 0, 0), 0), 'false')), 'false'), 'false') 
+  print(fprove(b))
+ 
+def fbug1() :
+  b=('->', ('->', ('<->', 0, ('<->', ('<->', ('<->', 0, 0), 0), 1)), 'false'), 'false')
+  print(fprove(b))  
+  
   
   
   
