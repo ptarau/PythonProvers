@@ -77,7 +77,7 @@ ljf_imp(A,B,Vs,[B|Vs]):-memberchk(A,Vs).
 # full intuitionistic propositional prover
 
 # defaults when no timeout is needed
-max_time = 30
+max_time = 100
 timeout = False
 
 def timeout_handler(no,frame) :
@@ -103,8 +103,8 @@ def fprove(G) :
   try :
     return any(ljf(G,None))
   except Exception:
-    print('timeout',get_max_time(),fshow(G))
-    print(G)
+    print('timeout',get_max_time())
+    #print(G)
     return 'timeout'
   finally :
     signal.alarm(0)

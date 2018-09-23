@@ -18,6 +18,9 @@ zz=expr(2)
 
 import timeit
 import trace
+import sys
+
+sys.setrecursionlimit(2**16)
 
 # tests    
     
@@ -55,16 +58,19 @@ def allFormTest2(f,generator,transformer,n) :
   provable = 0
   unprovable = 0
   timeout=0
+  ctr=0
   for t0 in generator(n) :
     t = transformer(t0)
     r = f(t)
     if(r=='timeout') :
+      print('timeout',ctr)
       timeout+=1
     if(r) :
       provable+=1
       yes_py.append(provable+unprovable)
     else :
       unprovable+=1
+    ctr+=1
   total=provable+unprovable+timeout
   ratio=provable/total
   print(n,'provable=',provable,'timeout=',timeout,'total=',
@@ -104,7 +110,10 @@ def load_iltp() :
   f=open('iltp.txt','r')
   for line in f :
     try :
-      yield(eval(line))
+      l = eval(line)
+      n,tf,fname,x=l
+      t = stack2tree(x)
+      yield n,tf,fname,t
     except MemoryError as e :
       pass
   f.close()
@@ -114,7 +123,28 @@ def store_iltp() :
   for l in load_iltp() :
       iltp.append(l)
   return iltp
-   
+
+ops2 = {'<->','v','->','&'}
+ops1 = {'~'}
+
+def stack2tree(postfix):
+    stack = [] 
+  
+    for x in postfix : 
+     if x in ops2 :
+       t2 = stack.pop() 
+       t1 = stack.pop()        
+       t=(x,t1,t2)     
+       stack.append(t) 
+     elif x in ops1 :
+       t1 = stack.pop()
+       t=(x,t1)
+       stack.append(t)
+     else :
+       stack.append(x)         
+    t = stack.pop()      
+    return t 
+  
 # max_time: 30, same at 60
 #provable 95 unprovable 50 timed_out 99 wrong 0 RIGHT: 145 total_tried 244
 def test_iltp(time) :
@@ -141,7 +171,7 @@ def test_iltp_with(prover,time) :
   for t in ts :
     N,TF,FN,G = t
     g = expandNeg(G)
-    print(N,FN)
+    print(N,TF,FN)
     R=prover(g)
     if R==TF :
       if(R==True) : 
@@ -224,18 +254,23 @@ def bmn(n) :
 def bm1() :
   bmf1(allFormTest1,7)
 
-#7 provable 2067 total 39369 unprovable 37302 ratio 0.05250323858873733
-#time =  0.9708034329999999
-#8 provable 31839 total 332193 unprovable 300354 ratio 0.0958448853527919
-#time =  13.487839
-#9 provable 115623 total 2100961 unprovable 1985338 ratio 0.05503338710237839
-#time =  3689.393962848
-
-#3 provable= 677 timeout= 0 total= 5649 unprovable= 4972 ratio= 0.11984422021596743
-#time =  0.09846649600001456
-#4 provable= 22026 timeout= 0 total= 222449 unprovable= 200423 ratio= 0.0990159542187198
-#5 provable= 898708 timeout= 0 total= 10548057 unprovable= 9649349 ratio= 0.08520128399002774
-#time =  5955.508686999
+'''
+# with pypy
+0 provable= 0 timeout= 0 total= 1 unprovable= 1 ratio= 0.0
+time =  0.0001832969719544053
+1 provable= 2 timeout= 0 total= 9 unprovable= 7 ratio= 0.2222222222222222
+time =  0.00029360002372413874
+2 provable= 25 timeout= 0 total= 185 unprovable= 160 ratio= 0.13513513513513514
+time =  0.002727662038523704
+3 provable= 677 timeout= 0 total= 5649 unprovable= 4972 ratio= 0.11984422021596743
+time =  0.051316455006599426
+4 provable= 22026 timeout= 0 total= 222449 unprovable= 200423 ratio= 0.0990159542187198
+time =  1.3671756840194575
+5 provable= 898708 timeout= 0 total= 10548057 unprovable= 9649349 ratio= 0.08520128399002774
+time =  76.52792301401496
+6 provable= 42998147 timeout= 0 total= 579007337 unprovable= 536009190 ratio= 0.07426183444027756
+time =  6556.73838984
+'''
 def fbmn(n) :
   for k in range(n+1) :
     bmf1(fullFormTest,k)
