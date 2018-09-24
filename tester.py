@@ -37,6 +37,9 @@ def bug() :
 def allFormTest(n) :
   return allFormTest2(iprove,iFormula,identity,n)
 
+  
+#  max_time: 100
+#  provable 99 unprovable 63 timed_out 112 wrong 0 RIGHT: 162 total_tried 274  
 def fullFormTest(n) :
   return allFormTest2(fprove,fFormula,expandNeg,n)   
   

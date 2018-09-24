@@ -44,7 +44,10 @@ True
 6 provable 27406 total 115764 unprovable 88358 ratio 0.23674026467641063
 >>> fullFormTest(7)
 7 provable 2067 total 39369 unprovable 37302 ratio 0.05250323858873733
-
+>>>test_iltp(10)
+...
+>>>test_iltp(10)
+...
 ```
 
 See more examples of use in tester.py .
