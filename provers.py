@@ -23,6 +23,42 @@ ljb_imp((C->D),B,Vs):-!,ljb((C->D),[(D->B)|Vs]).
 ljb_imp(A,_,Vs):-memberchk(A,Vs).   
 '''
 
+def jprove(G) : return any(lja(G,()))
+  
+def lja(G,Vs1) :
+  #print(G,Vs1)
+  if G in Vs1 : yield True
+  elif isTuple(G) :
+    A,B = G
+    #print('here',Vs1,'+',A)
+    Vs2=Vs1+(A,)
+    #print('there',Vs1)
+    yield any(lja(B,Vs2))
+  else : # atomic G
+    for Ls,V,Rs in sel(Vs1) :
+      if isTuple(V) :
+        A,B=V
+        Vs2=Ls+Rs
+        #print('imp',A,B,Vs2)
+        if lja_imp(A,B,Vs2) :
+          Vs3=Vs2+(B,)
+          yield any(lja(G,Vs3))
+          break
+ 
+def lja_imp(A,B,Vs1) :
+  if not isTuple(A) : return A in Vs1
+  else :
+    C,D=A
+    Vs2 = Vs1 + ((D,B),)
+    return any(lja(A,Vs2))
+
+def sel(xs) :
+  for i in range(len(xs)) :
+    ls=xs[:i]
+    x=xs[i]
+    rs=xs[i+1:]
+    yield (ls,x,rs)
+        
 # prover restricted to implicational logic
 # >>> allFormTest(6)
 # total 115764 provable 27406 unprovable 88358
@@ -39,12 +75,13 @@ def ljb(G,Vs1) :
         A,B=V
         if ljb_imp(A,B,Vs2) :
           yield any(ljb(G,(B,Vs2)))
+          break
  
 def ljb_imp(A,B,Vs1) :
   if not isTuple(A) : return memb(A,Vs1)
   else :
     C,D=A
-    return any(ljb((C,D),((D,B),Vs1)))
+    return any(ljb(A,((D,B),Vs1)))
 
 # derived from Prolog version   
 '''

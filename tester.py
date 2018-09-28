@@ -4,8 +4,9 @@ from formulas import (
 )
 from cnf import tseitin,to_cnf,fixVars, from_cnf
 from remy import ranBin0
+
 from provers import (
-   iprove, ljb,fprove,tprove,cprove,ljf,
+   iprove,jprove, sel,ljb,fprove,tprove,cprove,ljf,
    isTuple,ishow,fshow,to_triplet,fromList, toList,identity,selectFirst,
    pp,ppp,set_max_time,get_max_time, fp as fp
 )
@@ -37,7 +38,14 @@ def bug() :
 def allFormTest(n) :
   return allFormTest2(iprove,iFormula,identity,n)
 
-  
+def allFormTestx(n,prover) :
+    t1 = timeit.default_timer()
+    res = allFormTest2(prover,iFormula,identity,n)
+    t2 = timeit.default_timer()
+    print('time =',t2-t1)
+    return res
+    
+    
 #  max_time: 100
 #  provable 99 unprovable 63 timed_out 112 wrong 0 RIGHT: 162 total_tried 274  
 def fullFormTest(n) :
@@ -249,6 +257,10 @@ def rbm() :
   
 def bm() : 
   bmn(8)
+
+def bmx(n,p) :
+  for k in range(n) :
+    allFormTestx(k,p)
   
 def bmn(n) :
   for k in range(n) :
