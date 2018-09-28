@@ -23,6 +23,31 @@ ljb_imp((C->D),B,Vs):-!,ljb((C->D),[(D->B)|Vs]).
 ljb_imp(A,_,Vs):-memberchk(A,Vs).   
 '''
 
+# prover restricted to implicational logic
+# >>> allFormTest(6)
+# total 115764 provable 27406 unprovable 88358
+def iprove(G) : return any(ljb(G,None))
+
+def ljb(G,Vs1) :
+  if memb(G,Vs1) : yield True
+  elif isTuple(G) :
+    A,B = G
+    yield any(ljb(B,(A,Vs1)))
+  elif is_memb_head(G,Vs1) :
+    for V,Vs2 in selectFirst(Vs1) :
+      if isTuple(V) :
+        A,B=V
+        if ljb_imp(A,B,Vs2) :
+          yield any(ljb(G,(B,Vs2)))
+          break
+# slightly faster, with slices 
+def ljb_imp(A,B,Vs1) :
+  if not isTuple(A) : return memb(A,Vs1)
+  else :
+    C,D=A
+    return any(ljb(A,((D,B),Vs1)))
+
+    
 def jprove(G) : return any(lja(G,()))
   
 def lja(G,Vs1) :
@@ -58,31 +83,8 @@ def sel(xs) :
     x=xs[i]
     rs=xs[i+1:]
     yield (ls,x,rs)
-        
-# prover restricted to implicational logic
-# >>> allFormTest(6)
-# total 115764 provable 27406 unprovable 88358
-def iprove(G) : return any(ljb(G,None))
 
-def ljb(G,Vs1) :
-  if memb(G,Vs1) : yield True
-  elif isTuple(G) :
-    A,B = G
-    yield any(ljb(B,(A,Vs1)))
-  else : # atomic G
-    for V,Vs2 in selectFirst(Vs1) :
-      if isTuple(V) :
-        A,B=V
-        if ljb_imp(A,B,Vs2) :
-          yield any(ljb(G,(B,Vs2)))
-          break
- 
-def ljb_imp(A,B,Vs1) :
-  if not isTuple(A) : return memb(A,Vs1)
-  else :
-    C,D=A
-    return any(ljb(A,((D,B),Vs1)))
-
+    
 # derived from Prolog version   
 '''
 ljf(A,Vs):-memberchk(A,Vs),!.
@@ -251,6 +253,20 @@ def memb(X,Xs) :
     if Y==X : return True
   return False
  
+def is_memb_head(G,Ys) :
+  while Ys :
+    #print('Ys',Ys)
+    Y,Zs = Ys
+    Ys=Zs
+    #print('Y',Y)
+    while isTuple(Y) :
+      H,T=Y
+      Y=T
+    #print('Y',Y) 
+    #print('H',H)
+    if G==Y : return True
+  return False  
+  
 def tprove(x) :
   from sat import classical_tautology as ct
   c=ct(x)
