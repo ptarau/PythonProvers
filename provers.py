@@ -47,7 +47,13 @@ def ljb_imp(A,B,Vs1) :
     C,D=A
     return any(ljb(A,((D,B),Vs1)))
 
-    
+def selectFirst(Xs) :
+  if Xs :
+    yield Xs
+    X,Ys = Xs
+    for Z,Zs in selectFirst(Ys) :
+      yield Z,(X,Zs)    
+      
 def jprove(G) : return any(lja(G,()))
   
 def lja(G,Vs1) :
@@ -84,6 +90,45 @@ def sel(xs) :
     rs=xs[i+1:]
     yield (ls,x,rs)
 
+    
+    
+def xprove(G) : return any(ljx(G,()))
+  
+def ljx(G,Vs1) :
+  #print(G,Vs1)
+  if G in Vs1 : yield True
+  elif isTuple(G) :
+    A,B = G
+    #print('here',Vs1,'+',A)
+    Vs2=Vs1+(A,)
+    #print('there',Vs1)
+    yield any(ljx(B,Vs2))
+  else : # atomic G
+    for Ls,V,Rs in xsel(Vs1) :
+      if isTuple(V) :
+        A,B=V
+        Vs2=Ls+Rs
+        #print('imp',A,B,Vs2)
+        if ljx_imp(A,B,Vs2) :
+          Vs3=Vs2+(B,)
+          yield any(ljx(G,Vs3))
+          break
+ 
+def ljx_imp(A,B,Vs1) :
+  if not isTuple(A) : return A in Vs1
+  else :
+    C,D=A
+    Vs2 = Vs1 + ((D,B),)
+    return any(ljx(A,Vs2))
+
+def xsel(xs) :
+  for i in range(len(xs)) :
+    ls=xs[:i]
+    x=xs[i]
+    rs=xs[i+1:]
+    yield (ls,x,rs)
+    
+    
     
 # derived from Prolog version   
 '''
@@ -224,12 +269,7 @@ def ljf_imp(A,B,Vs) :
    
 # helpers    
     
-def selectFirst(Xs) :
-  if Xs :
-    X,Ys = Xs
-    yield (X,Ys)
-    for (Z,Zs) in selectFirst(Ys) :
-      yield (Z,(X,Zs))
+
       
 def isTuple(i) : return isinstance(i,tuple)
 
