@@ -85,7 +85,7 @@ def partition(xs):
         # put `first` in its own subset 
         yield [ [ first ] ] + smaller
         
-# fro partition as list of list, to list of indices
+# from partition as list of list, to list of indices
 def part2list(N,pss) :
   res=[]
   l=len(pss)

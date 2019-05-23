@@ -1,5 +1,5 @@
 import pycosat
-from cnf import to_cnf as to_cnf
+from cnf import to_cnf
 
 def picotest() :
   cnf = [[1, -5, 4], [-1, 5, 3, 4], [-3, -4]]

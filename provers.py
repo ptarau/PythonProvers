@@ -34,13 +34,14 @@ def ljb(G,Vs1) :
     A,B = G
     yield any(ljb(B,(A,Vs1)))
   elif is_memb_head(G,Vs1) :
+  #else :
     for V,Vs2 in selectFirst(Vs1) :
       if isTuple(V) :
         A,B=V
         if ljb_imp(A,B,Vs2) :
           yield any(ljb(G,(B,Vs2)))
           break
-# slightly faster, with slices 
+
 def ljb_imp(A,B,Vs1) :
   if not isTuple(A) : return memb(A,Vs1)
   else :
@@ -53,31 +54,28 @@ def selectFirst(Xs) :
     X,Ys = Xs
     for Z,Zs in selectFirst(Ys) :
       yield Z,(X,Zs)    
-      
+
+# slightly faster, with slices       
 def jprove(G) : return any(lja(G,()))
   
 def lja(G,Vs1) :
-  #print(G,Vs1)
   if G in Vs1 : yield True
-  elif isTuple(G) :
+  elif isinstance(G,tuple) :
     A,B = G
-    #print('here',Vs1,'+',A)
     Vs2=Vs1+(A,)
-    #print('there',Vs1)
     yield any(lja(B,Vs2))
   else : # atomic G
     for Ls,V,Rs in sel(Vs1) :
       if isTuple(V) :
         A,B=V
         Vs2=Ls+Rs
-        #print('imp',A,B,Vs2)
         if lja_imp(A,B,Vs2) :
           Vs3=Vs2+(B,)
           yield any(lja(G,Vs3))
           break
  
 def lja_imp(A,B,Vs1) :
-  if not isTuple(A) : return A in Vs1
+  if not isinstance(A,tuple) : return A in Vs1
   else :
     C,D=A
     Vs2 = Vs1 + ((D,B),)
