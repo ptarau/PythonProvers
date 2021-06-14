@@ -40,10 +40,9 @@ def allFormTest(n) :
 
 def allFormTestx(n,prover) :
     t1 = timeit.default_timer()
-    res = allFormTest2(prover,iFormula,identity,n)
+    allFormTest2(prover,iFormula,identity,n)
     t2 = timeit.default_timer()
     print('time =',t2-t1)
-    return res
     
     
 #  max_time: 100
@@ -73,7 +72,7 @@ def allFormTest2(f,generator,transformer,n) :
   for t0 in generator(n) :
     t = transformer(t0)
     r = f(t)
-    if(r=='timeout') :
+    if r=='timeout' :
       print('timeout',ctr)
       timeout+=1
     if(r) :
@@ -99,7 +98,7 @@ def proverDiff(n) :
      print('should_be_provable',t) 
     
 
-def fixYes() :
+def fixYes(yes) :
   return list(list2tuple(yes))
   
 def list2tuple(xs) :
@@ -109,7 +108,7 @@ def list2tuple(xs) :
   else :
     return xs
 
-def testYes() :
+def testYes(yes) :
   for x in list2tuple(yes) :
     y = expandNeg(x)
     if not fprove(y) :
@@ -185,10 +184,10 @@ def test_iltp_with(prover,time) :
     print(N,TF,FN)
     R=prover(g)
     if R==TF :
-      if(R==True) : 
+      if R==True  :
         provable+=1
         print('  ok:',R,'at:',provable)    
-      elif(R==False) : 
+      elif R==False :
         unprovable+=1
         print('  ok:',R,'at:',unprovable)     
     elif R=='timeout':
@@ -209,7 +208,7 @@ def test_iltp_with(prover,time) :
   
 # tests -----------------------------------
 
-t1 = ishow(((0,1),(0,(0,2))))
+t1_ = ishow(((0,1),(0,(0,2))))
 
 def bmf1(f,n) :
  start_time = timeit.default_timer()
@@ -233,13 +232,13 @@ def bmf2(f,x,y) :
  print('res = ',res)
  
  
-g=(1,(5,(0,(3,2)))) 
+g_=(1,(5,(0,(3,2))))
 
-k=(0,(1,0))
+k_=(0,(1,0))
 
-s=((0,(1,2)),((0,1),(0,2)))
+s_=((0,(1,2)),((0,1),(0,2)))
 
-a=((0,(1,1)),((0,1),(0,2)))
+a_=((0,(1,1)),((0,1),(0,2)))
 
 def ranTestProver(K,N) :
   succ=0 
@@ -333,7 +332,7 @@ def t1() :
   x=('->',('&',0,1),1)
   return fprove(x)
   
-def t2() :
+def t2_() :
   x= ('->', ('v', 0, 1), ('v', 1, 0))
   return fprove(x)
 
@@ -391,7 +390,6 @@ def fbug() :
 def fbug1() :
   b=('->', ('->', ('<->', 0, ('<->', ('<->', ('<->', 0, 0), 0), 1)), 'false'), 'false')
   print(fprove(b))  
-  
   
   
   
