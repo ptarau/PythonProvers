@@ -1,5 +1,5 @@
 from formulas import (
-  iFormula,iCounts,fCounts,ranLBin,binOp,opTree,
+  iFormula,hFormula,iCounts,fCounts,ranLBin,binOp,opTree,
   fFormula,expandNeg,genListPartition
 )
 from cnf import tseitin,to_cnf,fixVars, from_cnf
@@ -10,6 +10,8 @@ from provers import (
    isTuple,ishow,fshow,to_triplet,fromList, toList,identity,selectFirst,
    pp,ppp,set_max_time,get_max_time, fp as fp
 )
+from hprovers import hprove
+
 from sat import is_taut,is_sat
 from syntax import expr as expr, syntest as syntest
 
@@ -37,6 +39,10 @@ def bug() :
 # try iprove on all implicational formulas of size n
 def allFormTest(n) :
   return allFormTest2(iprove,iFormula,identity,n)
+
+def hornFormTest(n) :
+  return allFormTest2(hprove,hFormula,identity,n)
+
 
 def allFormTestx(n,prover) :
     t1 = timeit.default_timer()
@@ -320,13 +326,9 @@ def fbmn2(n) :
     bmf1(fullFormTest2,k)
 
     
-    
-    
 def fbm() :
   fbmn(5)
-   
-def bugbm() :
-  bmf1(buggyTest,6)  
+
   
 def t1() :
   x=('->',('&',0,1),1)

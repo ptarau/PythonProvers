@@ -7,16 +7,32 @@ from provers import isTuple
 
 # ---- all-terms of given size generators
 
-# implicational formulas of size n
-# total number: cataln(n)*bell(n+1)
+# implicational and nested Horn formulas of size n
+# total number: catalan(n)*bell(n+1)
 # superexponential growth - see https://oeis.org/A289679
-def iFormula(n) : 
+
+def iFormula(n) :
+  """
+  nested implicational formulas
+  """
   for tree in bin(n) :
     for lpart in genListPartition(n+1) :
       leafIter=iter(lpart)
       yield decorate(tree,leafIter)
 
-def fFormula(n) : 
+def hFormula(n) :
+  """
+  nested Horn formulas
+  """
+  for tree in horn(n) :
+    for lpart in genListPartition(n+1) :
+      atomIter=iter(lpart)
+      yield decorate_horn(tree,atomIter)
+
+def fFormula(n) :
+  """
+  full IPC formulas
+  """
   for tree in opTree(n) :
     m=leafCount(tree)
     for lpart in genListPartition(m) :
@@ -54,12 +70,43 @@ def bin(n) :
         for r in bin(n-1-k) :        
           yield (l,r)
 
+
 def decorate(tree,leafIter) :
-  if not tree : 
+  if not tree :
     return leafIter.__next__()
   else :
     l,r=tree
     return decorate(l,leafIter),decorate(r,leafIter)
+
+
+# rose tree (multi-way tree) of size n
+def rose(n):
+  if n == 0:
+    yield []
+  else:
+    for k in range(0, n):
+      for l in rose(k):
+        for r in rose(n - 1 - k):
+          yield [l] + r
+
+def horn(n):
+  if n == 0:
+    yield 'o',[]
+  else:
+    for k in range(0, n):
+      for f,l in horn(k):
+        for g,r in horn(n - 1 - k):
+          yield g, [(f,l)] + r
+
+
+def decorate_horn(tree,leafIter) :
+  x=leafIter.__next__()
+  _,bs=tree
+  if not bs :
+    return x
+  else :
+    return x,[decorate_horn(b,leafIter) for b in bs]
+
 
     
 # set partition generator, as list of indices
