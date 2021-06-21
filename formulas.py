@@ -29,6 +29,63 @@ def hFormula(n) :
       atomIter=iter(lpart)
       yield decorate_horn(tree,atomIter)
 
+def path_of(t) :
+  if isinstance(t,tuple)  :
+    h,bs=t
+    for b in bs:
+      for xs in path_of(b):
+        yield (h,)+xs
+  else:
+    yield (t,)
+
+def consts_of(term) :
+  def const_of(t):
+    if isinstance(t, tuple) or isinstance(t, list):
+      for x in t:
+        yield from const_of(x)
+    else:
+      yield t
+
+  return sorted(set(const_of(term)))
+
+def xtt():
+  for t in hFormula(5) :
+    print('t:',t)
+    for p in path_of(t):
+       print(p)
+    print('\n')
+
+'''
+def const_as_bits(c,cs) :
+  i=cs.index(c)
+  return 1<<i
+
+def bits_to_consts(bs,cs) :
+  xs=[]
+  for i,c in enumerate(cs):
+    if 1&(bs>>i) :
+      xs.append(c)
+  return xs
+
+def horn_to_bins(t):
+  cs = consts_of(t)
+
+  def h2b(z):
+    (x,ys) = z
+    h = const_as_bits(x, cs) #int
+    bs = []
+    for y in ys:
+      if isinstance(y,tuple):
+        b = h2b(y)
+      else:
+        b=const_as_bits(y,cs)
+      bs.append(b)
+    return h,bs
+  return h2b(t)
+'''
+
+
+
 def fFormula(n) :
   """
   full IPC formulas
@@ -286,3 +343,5 @@ def go() :
   print('Implicational Formulas',iCounts(7))
   
   print("done")
+
+xtt()
