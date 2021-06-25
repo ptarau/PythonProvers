@@ -1,5 +1,5 @@
 from formulas import (
-  iFormula,hFormula,iCounts,fCounts,ranLBin,binOp,opTree,
+  iFormula,hFormula,sFormula,iCounts,fCounts,ranLBin,binOp,opTree,
   fFormula,expandNeg,genListPartition
 )
 from cnf import tseitin,to_cnf,fixVars, from_cnf
@@ -43,6 +43,8 @@ def allFormTest(n) :
 def hornFormTest(n) :
   return allFormTest2(hprove,hFormula,identity,n)
 
+def strictHornFormTest(n) :
+  return allFormTest2(hprove,sFormula,identity,n)
 
 def allFormTestx(n,prover) :
     t1 = timeit.default_timer()
