@@ -1,4 +1,9 @@
+import os
+import json
 import timeit
+from inspect import getframeinfo, stack
+
+PARAMS=dict(TRACE=1)
 
 def ordset(xs):
   """
@@ -29,3 +34,17 @@ def count(xs) :
   counts elements of a generator
   """
   return sum(1 for _ in xs)
+
+def ppp(*args,**kwargs) :
+  """
+  logging mechanism with possible DEBUG extras
+  will tell from which line in which file the printed
+  messge orginates from
+  """
+  if PARAMS["TRACE"] < 1: return
+  if PARAMS["TRACE"] >= 1 :
+    caller = getframeinfo(stack()[1][0])
+    print('DEBUG:',
+        caller.filename.split('/')[-1],
+        '->', caller.lineno, end=': ')
+  print(*args, **kwargs)
