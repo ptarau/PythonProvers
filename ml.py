@@ -33,11 +33,12 @@ class ProofSet:
     self.generator=generator
     self.prover=prover
     self.encoder=encoder
+    self.formula_count=0
 
   def build(self):
     for formula in self.generator(self.term_size):
+      self.formula_count+=1
       is_proven=self.prover(formula)
-      #print("!!!",is_proven,formula)
       self.formulas.append(formula)
       self.proven.append(is_proven)
     codes=list(self.encoder(self.formulas))
@@ -46,14 +47,15 @@ class ProofSet:
     return X,y
 
 class DataSet(ProofSet) :
-  def __init__(self,**kwargs):
+  def __init__(self,split_perc=10,**kwargs):
     super().__init__(**kwargs)
+    self.split_perc=split_perc
 
-  def split(self,split_perc=10):
+  def split(self):
      X,y=self.build()
      assert len(X)==len(y)
      data_size=len(X)
-     k=split_perc*data_size//100
+     k=self.split_perc*data_size//100
      Xy=list(zip(X,y))
      random.shuffle(Xy)
      vaXy,teXy=[],[]
@@ -67,19 +69,39 @@ class DataSet(ProofSet) :
      return X_tr,y_tr,X_va,y_va,X_te,y_te
 
 class Learner:
-  def __init__(self,classifier=rf_clf):
+  def __init__(self,classifier=rf_clf,dataset=None):
     self.classifier=classifier
-    D=DataSet()
-    self.X_tr, self.y_tr, self.X_va, self.y_va, self.X_te, self.y_te=D.split()
+    self.X_tr,self.y_tr,self.X_va,self.y_va,self.X_te,self.y_te=dataset.split()
 
   def run(self):
-    run_with_data(self.classifier(),
-                  self.X_tr, self.y_tr, self.X_va, self.y_va, self.X_te, self.y_te)
+    res=run_with_data(self.classifier(),
+                  self.X_tr,self.y_tr,self.X_va,self.y_va,self.X_te,self.y_te)
 
+    def show_aucs(res):
+      va,te=res
+      print('\n', '-' * 40)
+      print('VALIDATION:',round(va,4))
+      print('TEST AUC:  ',round(te,4))
+      print('-' * 40)
 
-def test_ml() :
-  L=Learner()
+    show_aucs(res)
+
+def test_ml1() :
+  D=DataSet(generator=sFormula,term_size=6)
+  L=Learner(classifier=rf_clf,dataset=D)
   L.run()
+
+def test_ml2() :
+  D=DataSet(generator=hFormula,term_size=6)
+  L=Learner(classifier=rf_clf,dataset=D)
+  L.run()
+
+def test_ml3() :
+  D=DataSet(generator=sFormula,term_size=6)
+  L=Learner(classifier=neural_clf,dataset=D)
+  L.run()
+
+test_ml=test_ml3
 
 if __name__=="__main__":
   test_ml()

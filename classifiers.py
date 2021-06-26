@@ -52,15 +52,4 @@ def run_with_data(classifier,x_tr,y_tr,x_va,y_va,x_te,y_te,show=True):
     scores.append(auc_te)
     return scores
 
-  auc=run()
-
-  def show_aucs() :
-    print('\n', '-' * 40)
-    print('AUC',auc)
-    print('-' * 40)
-    # return aucs
-
-  if show : show_aucs()
-
-  # final return here
-  return auc
+  return run()
