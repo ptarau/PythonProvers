@@ -13,13 +13,33 @@ def padded_path(xs,max_l,pad=(0,0)) :
    zs= ys+([pad]*(max_l-l))
    return zs
 
-def path_encoder(ts)  :
-
+def to_path_of_pairs(ts)  :
   xss=[path_of(t) for t in ts]
   max_l=max(len(xs) for xs in xss)
   for xs in xss:
-     ys=padded_path(xs,max_l,pad=(0,0))
+     yield padded_path(xs,max_l,pad=(0,0))
+
+def path_encoder(ts)  :
+   for ys in to_path_of_pairs(ts):
      yield [z for xy in ys for z in xy]
+
+def complex2pair(z) :
+  return abs(z),phase(z)
+
+def bijective_encoder(ts,bijection=None) :
+  for ps in to_path_of_pairs(ts) :
+    cs=path2cs(ps)
+    fs=bijection(cs)
+    yield  [z for xy in fs for z in complex2pair(xy)]
+
+def polar_encoder(ts):
+  yield from bijective_encoder(ts, bijection=identity)
+
+def fft_encoder(ts) :
+  yield from bijective_encoder(ts,bijection=cs2fft)
+
+def poly_encoder(ts) :
+  yield from bijective_encoder(ts,bijection=cs2poly)
 
 class ProofSet:
   def __init__(self,
@@ -33,18 +53,50 @@ class ProofSet:
     self.generator=generator
     self.prover=prover
     self.encoder=encoder
-    self.formula_count=0
 
-  def build(self):
+  def fresh_build(self,show=True):
     for formula in self.generator(self.term_size):
-      self.formula_count+=1
       is_proven=self.prover(formula)
       self.formulas.append(formula)
       self.proven.append(is_proven)
     codes=list(self.encoder(self.formulas))
     X=codes
     y=self.proven
+    if show:
+      print('Dataset:',self)
+      s=sum(self.proven)
+      l=len(self.formulas)
+      r=round(s/l,4)
+      print('Formulas:',l,'Size:',self.term_size,
+            'Proven:',s,'Ratio:',r,'\n')
     return X,y
+
+  def build(self,show=True):
+    Xy=self.load()
+    if not Xy:
+      Xy=self.fresh_build(show=show)
+      self.store(*Xy)
+    return Xy
+
+  def __repr__(self):
+    fs = self.generator,self.prover,self.encoder
+    ns = [f.__name__ for f in fs]+[str(self.term_size)]
+    return "-".join(ns)
+
+  def cache_name(self):
+    return PARAMS["CACHE"]+str(self)  + ".json"
+
+  def store(self,X,y):
+    fname=self.cache_name()
+    ensure_path(fname)
+    to_json((X,y),fname)
+
+  def load(self):
+    fname=self.cache_name()
+    if not exists_file(fname) : return None
+    return from_json(fname)
+
+
 
 class DataSet(ProofSet) :
   def __init__(self,split_perc=10,**kwargs):
@@ -77,22 +129,23 @@ class Learner:
     res=run_with_data(self.classifier(),
                   self.X_tr,self.y_tr,self.X_va,self.y_va,self.X_te,self.y_te)
 
-    def show_aucs(res):
-      va,te=res
+    def show_aucs(aucs):
+      va,te=aucs
       print('\n', '-' * 40)
-      print('VALIDATION:',round(va,4))
-      print('TEST AUC:  ',round(te,4))
+      print('VALIDATION AUC:',round(va,4))
+      print('TEST       AUC:',round(te,4))
       print('-' * 40)
-
     show_aucs(res)
 
+# tests
+
 def test_ml1() :
-  D=DataSet(generator=sFormula,term_size=6)
+  D=DataSet(generator=hFormula,term_size=6)
   L=Learner(classifier=rf_clf,dataset=D)
   L.run()
 
 def test_ml2() :
-  D=DataSet(generator=hFormula,term_size=6)
+  D=DataSet(generator=sFormula,term_size=7)
   L=Learner(classifier=rf_clf,dataset=D)
   L.run()
 
@@ -101,7 +154,37 @@ def test_ml3() :
   L=Learner(classifier=neural_clf,dataset=D)
   L.run()
 
-test_ml=test_ml3
+def test_ml4():
+    D = DataSet(generator=sFormula, encoder=fft_encoder,term_size=7)
+    L = Learner(classifier=neural_clf, dataset=D)
+    L.run()
+
+def test_ml5():
+  D = DataSet(generator=sFormula, encoder=poly_encoder, term_size=7)
+  L = Learner(classifier=rf_clf, dataset=D)
+  L.run()
+
+def test_ml6():
+  D = DataSet(generator=sFormula, encoder=polar_encoder, term_size=7)
+  L = Learner(classifier=rf_clf, dataset=D)
+  L.run()
+
+def test_ml7():
+  D = DataSet(generator=ranHorns,
+              #encoder=polar_encoder,
+              term_size=18)
+  L = Learner(classifier=rf_clf, dataset=D)
+  L.run()
+
+def test_ml8():
+  D = DataSet(generator=mixHorns,
+              #encoder=polar_encoder,
+              term_size=18)
+  L = Learner(classifier=rf_clf, dataset=D)
+  L.run()
+
+
+test_ml=test_ml8
 
 if __name__=="__main__":
   test_ml()

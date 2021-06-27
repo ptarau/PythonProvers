@@ -3,7 +3,7 @@ import json
 import timeit
 from inspect import getframeinfo, stack
 
-PARAMS=dict(TRACE=1)
+PARAMS=dict(TRACE=1,CACHE="CACHE/")
 
 def ordset(xs):
   """
@@ -48,3 +48,38 @@ def ppp(*args,**kwargs) :
         caller.filename.split('/')[-1],
         '->', caller.lineno, end=': ')
   print(*args, **kwargs)
+
+def to_json(obj,fname,indent=1) :
+  """
+  serializes an object to a json file
+  assumes object made of array and dicts
+  """
+  with open(fname, "w") as outf:
+    json.dump(obj,outf,indent=indent)
+
+def from_json(fname) :
+  """
+  deserializes an object from a json file
+  """
+  with open(fname, "r") as inf:
+    obj = json.load(inf)
+    return obj
+
+def exists_file(fname) :
+  """tests  if it exists as file or dir """
+  return os.path.exists(fname)
+
+def ensure_path(fname) :
+  """
+  makes sure path to directory and directory exist
+  """
+  d,_=os.path.split(fname)
+  os.makedirs(d, exist_ok=True)
+
+def files_of(directory) :
+  """
+  generator yielding files in a directory
+  """
+  for entry in os.scandir(directory):
+    yield entry.path
+

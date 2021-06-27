@@ -234,7 +234,7 @@ def links2lbin(k,L,xs) :
   else :
     return links2lbin(L[k],L,xs),links2lbin(L[k+1],L,xs)   
 
-# labeled random binary trees  - using Remy;s algorithm
+# labeled random binary trees  - using Remy's algorithm
     
 def ranLBin1(N) :
   L = ranBin0(N)
@@ -259,7 +259,25 @@ def ranLBin(K,N) :
     for bs in bss :
        yield links2lbin(L[0],L,bs)
        
-      
+def toHorn(t):
+  h=t
+  bs = []
+  while isinstance(t,tuple) :
+    a,h=t
+    bs.append(toHorn(a))
+    t=h
+  if bs : return h,bs
+  return h
+
+def ranHorns(size,howMany=None) :
+  if howMany is None: howMany=size*size
+  for b in ranLBin(howMany,size):
+    yield toHorn(b)
+
+def mixHorns(size) :
+  yield from hFormula(size//3)
+  yield from ranHorns(size)
+
 # Motzkin trees of size n
 def mot (n) :
   if n==0 : 

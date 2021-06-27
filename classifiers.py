@@ -19,17 +19,17 @@ def rf_clf() :
 
 @learner
 def neural_clf():
-  #sizes = (128,72,128)  # 0.7780
-  sizes = (128,64,128)   # 0.7791 <= BEST
-  #sizes = (128,96,128)  # 0.7638
-  #ppp('MLP hidden unit sizes:',sizes)
+  #sizes = (128,72,128)
+  sizes = (128,64,128)
+  #sizes = (128,96,128)
   return MLPClassifier(
     early_stopping=False,
     shuffle=True,
     hidden_layer_sizes=sizes,
     random_state=1234,
     activation='logistic',
-    max_iter=400
+    max_iter=512,
+    verbose=True
   )
 
 def run_with_data(classifier,x_tr,y_tr,x_va,y_va,x_te,y_te,show=True):
@@ -37,7 +37,6 @@ def run_with_data(classifier,x_tr,y_tr,x_va,y_va,x_te,y_te,show=True):
     tuple(map(np.array,[x_tr, y_tr, x_va, y_va, x_te, y_te]))
 
   def run() :
-    scores = []
     print(x_tr)
     print('SHAPES:',x_tr.shape,y_tr.shape)
     classifier.fit(x_tr,y_tr)
@@ -48,8 +47,6 @@ def run_with_data(classifier,x_tr,y_tr,x_va,y_va,x_te,y_te,show=True):
     auc_va = roc_auc_score(y_va, p_va[:, 1])
     auc_te = roc_auc_score(y_te, p_te[:, 1])
 
-    scores.append(auc_va)
-    scores.append(auc_te)
-    return scores
+    return auc_va,auc_te
 
   return run()

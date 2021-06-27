@@ -126,6 +126,8 @@ def cs2path(cs):
   xs=sorted(xs)#,key=lambda v:v[0])
   return xs
 
+def identity(x) :
+  return x
 
 def cs2poly(cs):
   return P.polyfromroots(cs)

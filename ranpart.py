@@ -22,7 +22,7 @@ def getBellNumber(n):
     B = genBellNumbers(n)
     return B[n]
     
-# finds out how many urns fit in the given proba bility
+# finds out how many urns fit in the given probability
 def getM1(p, n, b) :
     m = 0
     while(p > 0) :
@@ -87,5 +87,4 @@ def randPart(n,bell) :
       d[p] = []
     d[p].append(i)
   return d
-    
     
