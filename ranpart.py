@@ -87,4 +87,11 @@ def randPart(n,bell) :
       d[p] = []
     d[p].append(i)
   return d
-    
+
+def test_ranpart(n=10):
+  B=getBellNumber(n)
+  print(randPart(n,B))
+  print(getRandomSet(n,B))
+
+if __name__=="__main__":
+  test_ranpart()

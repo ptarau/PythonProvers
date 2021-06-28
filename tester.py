@@ -397,3 +397,9 @@ def fbug1() :
   
   
   
+if __name__=="__main__":
+  n=7
+  start_time = timeit.default_timer()
+  strictHornFormTest(n)
+  end_time = timeit.default_timer()
+  print('TIME:',round(end_time-start_time,2))

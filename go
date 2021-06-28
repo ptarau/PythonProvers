@@ -1,1 +1,1 @@
-python3 -i tester.py
+python3 -i hprovers.py

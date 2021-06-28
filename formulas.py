@@ -43,7 +43,8 @@ def sFormula(n) :
   nested Strict Horn formulas
   """
   for lpart in genListPartition(n+1) :
-    yield from strict_horn(n,lpart)
+    for x in strict_horn(n,lpart):
+      yield x
 
 def fFormula(n) :
   """

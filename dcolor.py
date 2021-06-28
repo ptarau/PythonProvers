@@ -73,8 +73,8 @@ def test_dcolor():
   # dc.plot(lambda z : (1/(1-1j*z))-(1+1j*z))
   # dc.plot(lambda z : z**3)
   #dc.plot(lambda z : ((z+1-2j)*(z+2+2j)*((z-2)**2))/(z**3))
-  #dc.plot(lambda z : np.sin(z))
-  dc.plot(lambda z: z ** (1/4))
+  #dc.plot(lambda z : np.cosh(z))
+  dc.plot(lambda z: (z+1)*(z-1)*(z)*(z-(0+1j)))
 
 
 if __name__=="__main__":

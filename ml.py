@@ -2,7 +2,7 @@ from utils import *
 from formulas import *
 from hprovers import *
 from classifiers import *
-from experiments import *
+from encoders import *
 import random
 random.seed(1234)
 
@@ -13,11 +13,25 @@ def padded_path(xs,max_l,pad=(0,0)) :
    zs= ys+([pad]*(max_l-l))
    return zs
 
+
+def padded_seq(xs, max_l, pad=0):
+  ys = [a + 1 for a in xs]
+  l = len(ys)
+  assert l <= max_l
+  zs = ys + ([pad] * (max_l - l))
+  return zs
+
 def to_path_of_pairs(ts)  :
   xss=[path_of(t) for t in ts]
   max_l=max(len(xs) for xs in xss)
   for xs in xss:
      yield padded_path(xs,max_l,pad=(0,0))
+
+def to_def_code(ts):
+  xss = [df_code(t) for t in ts]
+  max_l = max(len(xs) for xs in xss)
+  for xs in xss:
+    yield padded_seq(xs, max_l, pad=0)
 
 def path_encoder(ts)  :
    for ys in to_path_of_pairs(ts):
@@ -183,8 +197,21 @@ def test_ml8():
   L = Learner(classifier=rf_clf, dataset=D)
   L.run()
 
+def test_ml9():
+  D = DataSet(generator=sFormula,
+              encoder=to_def_code,
+              term_size=7)
+  L = Learner(classifier=rf_clf, dataset=D)
+  L.run()
 
-test_ml=test_ml8
+def test_ml10():
+  D = DataSet(generator=sFormula,
+              encoder=to_def_code,
+              term_size=7)
+  L = Learner(classifier=neural_clf, dataset=D)
+  L.run()
+
+test_ml=test_ml9
 
 if __name__=="__main__":
   test_ml()

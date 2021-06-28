@@ -1,1 +1,1 @@
-pypy -i tester.py
+pypy3 -q -i hprovers.py
