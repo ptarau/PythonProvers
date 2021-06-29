@@ -270,6 +270,9 @@ def toHorn(t):
   if bs : return h,bs
   return h
 
+def ranHorn(size) :
+  return next(ranHorns(size,howMany=1))
+
 def ranHorns(size,howMany=None) :
   if howMany is None: howMany=size*size
   for b in ranLBin(howMany,size):

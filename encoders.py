@@ -113,11 +113,9 @@ def fft_code(t):
 
 
 # tests
-def pic_test() :
-  #t=(0, [(0, [(1, [0, 2, (1, [2])])])])
-  t=(0, [3, (0, [(3, [(3, [(1, [2])])])])])
-  t=(1, [2, (1, [(2, [(1, [(0, [1])])])])])
-  #t=(3, [3, 3, (0, [1]), (1, [2, 3, 3])])
+def pic_test(size=20) :
+  t=ranHorn(size)
+  print('TERM:',t)
   p=path_of(t)
   print('PATH:',p)
   #p=[2,4]
@@ -136,7 +134,8 @@ def test_encoders(n=2) :
     p_ = cs2path(cs)
     print('PATH, AGAIN:', p_)
     print('')
-
+    ds=df_code(t)
+    print("DEPTH FIRST CODE:",ds)
     cs = sorted(cs, key=lambda x: x.real)
     print('COMPLEX VECT', p, len(cs) * 2, cs)
     ps = cs2poly(cs)
