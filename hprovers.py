@@ -6,28 +6,40 @@ def hprove(GBs) :
   in equivalent Nested Horn Clauses form
   """
   G,Bs=GBs
+  print(G,'assuming',Bs)
   return any(ljh(G,Bs))
 
 def ljh(G,Vs):
-  if G in Vs : yield True
+  if G in Vs :
+    print(G,'if0',Vs)
+    yield True
   elif isinstance(G,tuple) :
     H,Bs=G
-    yield any(ljh(H,Bs+Vs))
+    R= any(ljh(H,Bs+Vs))
+    print(G,'if1',Bs+Vs)
+    yield R
   elif check_head(G,Vs) :
     for X, Vs2 in select(Vs):
       if not isinstance(X,tuple): continue
+      print('choice1', X)
       (B, As) = X
       for A, Bs in select(As):
+        print('choice2',A)
         if ljh_imp(A, B, Vs2):
           NewB = trimmed((B, Bs))
-          yield any(ljh(G, [NewB] + Vs2))
+          R= any(ljh(G, [NewB] + Vs2))
+          print(G,'if2',[NewB] + Vs2)
+          yield R
 
 def ljh_imp(X,B,Vs) :
   if not isinstance(X,tuple) :
+    print(X,'if4',Vs)
     return X in Vs
   else:
     D,Cs=X
-    return any(ljh(X,[(B,[D])]+Vs))
+    R=any(ljh(X,[(B,[D])]+Vs))
+    print(X, '<---if5____', [(B, [D])] + Vs)
+    return R
 
 def check_head(G,Vs):
   for X in Vs:
@@ -114,7 +126,10 @@ def test_select() :
   xs=[1,2]
   for x in select(xs) : print(*x)
 
-def test_hprovers(n=8):
+def test_hprovers(n=7):
+  xCombType=(7,[(7,[(0,[0,1]),(4,[(4,[2,3]),(3,[2]),2]),(5,[5,6])])])
+  print('xCombType',hprove(xCombType))
+  return
   proven=0
   forms=0
   t1=timer()
