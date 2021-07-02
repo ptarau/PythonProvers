@@ -4,41 +4,34 @@ def hprove(GBs) :
   """
   Prover for Intuitionstic Implicational Formulas
   in equivalent Nested Horn Clauses form
+
   """
   G,Bs=GBs
-  print(G,'assuming',Bs)
   return any(ljh(G,Bs))
 
 def ljh(G,Vs):
   if G in Vs :
-    print(G,'if0',Vs)
     yield True
   elif isinstance(G,tuple) :
     H,Bs=G
     R= any(ljh(H,Bs+Vs))
-    print(G,'if1',Bs+Vs)
     yield R
   elif check_head(G,Vs) :
     for X, Vs2 in select(Vs):
       if not isinstance(X,tuple): continue
-      print('choice1', X)
       (B, As) = X
       for A, Bs in select(As):
-        print('choice2',A)
         if ljh_imp(A, B, Vs2):
           NewB = trimmed((B, Bs))
           R= any(ljh(G, [NewB] + Vs2))
-          print(G,'if2',[NewB] + Vs2)
           yield R
 
 def ljh_imp(X,B,Vs) :
   if not isinstance(X,tuple) :
-    print(X,'if4',Vs)
     return X in Vs
   else:
     D,Cs=X
     R=any(ljh(X,[(B,[D])]+Vs))
-    print(X, '<---if5____', [(B, [D])] + Vs)
     return R
 
 def check_head(G,Vs):
@@ -56,6 +49,56 @@ def trimmed(X) :
 def select(xs):
   for i in range(len(xs)):
     yield xs[i], xs[:i] + xs[i + 1:]
+
+
+
+def hprove_(GBs) :
+  """
+  Prover for Intuitionstic Implicational Formulas
+  in equivalent Nested Horn Clauses form
+
+  variant with tracing anabled
+  """
+  G,Bs=GBs
+  print(G,'assuming',Bs)
+  return any(ljh_(G,Bs))
+
+def ljh_(G,Vs):
+  if G in Vs :
+    print(G,'if0',Vs)
+    yield True
+  elif isinstance(G,tuple) :
+    H,Bs=G
+    R= any(ljh_(H,Bs+Vs))
+    print(G,'if1',Bs+Vs)
+    yield R
+  elif check_head(G,Vs) :
+    for X, Vs2 in select(Vs):
+      if not isinstance(X,tuple): continue
+      print('choice1', X)
+      (B, As) = X
+      for A, Bs in select(As):
+        print('choice2',A)
+        if ljh_imp_(A, B, Vs2):
+          NewB = trimmed((B, Bs))
+          R= any(ljh_(G, [NewB] + Vs2))
+          print(G,'if2',[NewB] + Vs2)
+          yield R
+
+def ljh_imp_(X,B,Vs) :
+  if not isinstance(X,tuple) :
+    print(X,'if4',Vs)
+    return X in Vs
+  else:
+    D,Cs=X
+    R=any(ljh_(X,[(B,[D])]+Vs))
+    print(X, '<---if5____', [(B, [D])] + Vs)
+    return R
+
+
+
+
+
 
 
 # to make this self-contained, for testing with pypy
@@ -126,10 +169,9 @@ def test_select() :
   xs=[1,2]
   for x in select(xs) : print(*x)
 
-def test_hprovers(n=7):
+def test_hprovers(n=6):
   xCombType=(7,[(7,[(0,[0,1]),(4,[(4,[2,3]),(3,[2]),2]),(5,[5,6])])])
   print('xCombType',hprove(xCombType))
-  return
   proven=0
   forms=0
   t1=timer()

@@ -1,6 +1,7 @@
 from utils import *
 import numpy as np
 from sklearn.metrics import roc_auc_score
+from sklearn.metrics import accuracy_score
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.neural_network import MLPClassifier
 
@@ -32,7 +33,8 @@ def neural_clf():
     verbose=True
   )
 
-def run_with_data(classifier,x_tr,y_tr,x_va,y_va,x_te,y_te,show=True):
+def run_with_data(classifier,x_tr,y_tr,x_va,y_va,x_te,y_te,
+                  score='acc',show=True):
   x_tr, y_tr, x_va, y_va, x_te, y_t= \
     tuple(map(np.array,[x_tr, y_tr, x_va, y_va, x_te, y_te]))
 
@@ -41,12 +43,22 @@ def run_with_data(classifier,x_tr,y_tr,x_va,y_va,x_te,y_te,show=True):
     print('SHAPES:',x_tr.shape,y_tr.shape)
     classifier.fit(x_tr,y_tr)
 
-    p_va = classifier.predict_proba(x_va)
-    p_te = classifier.predict_proba(x_te)
+    if score=='acc':
+      va = classifier.predict(x_va)
+      te = classifier.predict(x_te)
 
-    auc_va = roc_auc_score(y_va, p_va[:, 1])
-    auc_te = roc_auc_score(y_te, p_te[:, 1])
+      acc_va = roc_auc_score(y_va, va)
+      acc_te = roc_auc_score(y_te, te)
 
-    return auc_va,auc_te
+      return acc_va, acc_te
+
+    elif score=='auc':
+      p_va = classifier.predict_proba(x_va)
+      p_te = classifier.predict_proba(x_te)
+
+      auc_va = roc_auc_score(y_va, p_va[:, 1])
+      auc_te = roc_auc_score(y_te, p_te[:, 1])
+
+      return auc_va,auc_te
 
   return run()

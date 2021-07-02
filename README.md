@@ -12,15 +12,6 @@ Intuitionistic (and classical) Propositional Theorem Provers and Formula Generat
 * a generator for closed lambda terms and a type inference algorithm for generating simply-typed terms of a given size
 * tests on a Python-readable version of the ILTP propositional logic tests
 
-## Dependecies:
-The addition of a SAT-based classical propositional tautology prover
-needs the *pycosat* package, install it with something like
-
-```
-pip3 install pycosat
-```
-If not interested inthat, just comment out the pycosat import statements.
-We have no dependencies for the intuitionistic provers.
 
 ## Examples of use
 
@@ -51,3 +42,20 @@ True
 ```
 
 See more examples of use in tester.py .
+
+# Machine Learning-based Theorem Testing
+
+the file ```ml.py``` contains several combinations of formula generators and theorem provers used to train scikit-learn based classifiers, that return very high AUC scores (above 0.95) and reasonable good ACCURACY scores (above 0.80) on recognizing which formulas are theorems.
+
+# Dependencies:
+The addition of a SAT-based classical propositional tautology prover
+needs the *pycosat* package, install it with something like
+
+```
+pip3 install pycosat
+```
+If not interested in that, just comment out the pycosat import statements. Visualisations depend on matplotlib. To install it use: The machine learnin component in ```ml.py``` depends on ```sckikit-learn``` and ```numpy```.
+
+```pip3 install matplotlib```
+
+We have no dependencies for the intuitionistic provers.

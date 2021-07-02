@@ -135,19 +135,22 @@ class DataSet(ProofSet) :
      return X_tr,y_tr,X_va,y_va,X_te,y_te
 
 class Learner:
-  def __init__(self,classifier=rf_clf,dataset=None):
+  def __init__(self,classifier=rf_clf,dataset=None,score='auc'):
     self.classifier=classifier
-    self.X_tr,self.y_tr,self.X_va,self.y_va,self.X_te,self.y_te=dataset.split()
+    self.score=score
+    self.X_tr,self.y_tr,self.X_va,self.y_va,self.X_te,self.y_te=\
+      dataset.split()
 
   def run(self):
     res=run_with_data(self.classifier(),
-                  self.X_tr,self.y_tr,self.X_va,self.y_va,self.X_te,self.y_te)
+                  self.X_tr,self.y_tr,self.X_va,self.y_va,self.X_te,self.y_te,
+                  score=self.score)
 
     def show_aucs(aucs):
       va,te=aucs
       print('\n', '-' * 40)
-      print('VALIDATION AUC:',round(va,4))
-      print('TEST       AUC:',round(te,4))
+      print('VALIDATION',self.score,':',round(va,4))
+      print('TEST      ',self.score,':',round(te,4))
       print('-' * 40)
     show_aucs(res)
 
@@ -180,7 +183,7 @@ def test_ml5():
 
 def test_ml6():
   D = DataSet(generator=sFormula, encoder=polar_encoder, term_size=7)
-  L = Learner(classifier=rf_clf, dataset=D)
+  L = Learner(classifier=rf_clf, dataset=D,score='auc')
   L.run()
 
 def test_ml7():
@@ -194,21 +197,21 @@ def test_ml8():
   D = DataSet(generator=mixHorns,
               #encoder=polar_encoder,
               term_size=18)
-  L = Learner(classifier=rf_clf, dataset=D)
+  L = Learner(classifier=rf_clf, dataset=D,score='auc')
   L.run()
 
 def test_ml9():
   D = DataSet(generator=sFormula,
               encoder=to_def_code,
               term_size=7)
-  L = Learner(classifier=rf_clf, dataset=D)
+  L = Learner(classifier=rf_clf, dataset=D,score='acc')
   L.run()
 
 def test_ml10():
   D = DataSet(generator=sFormula,
               encoder=to_def_code,
               term_size=7)
-  L = Learner(classifier=neural_clf, dataset=D)
+  L = Learner(classifier=neural_clf, dataset=D,score='acc')
   L.run()
 
 test_ml=test_ml9
