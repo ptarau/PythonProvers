@@ -214,7 +214,23 @@ def test_ml10():
   L = Learner(classifier=neural_clf, dataset=D,score='acc')
   L.run()
 
-test_ml=test_ml9
+def test_ml11():
+  D = DataSet(#generator=sFormula,
+              generator=mixHorns,
+              encoder=to_def_code,
+              term_size=7)
+  L = Learner(classifier=rf_clf, dataset=D,score='cross')
+  L.run()
+
+def test_ml12():
+  D = DataSet(#generator=sFormula,
+              generator=mixHorns,
+              encoder=to_def_code,
+              term_size=7)
+  L = Learner(classifier=neural_clf, dataset=D,score='cross')
+  L.run()
+
+test_ml=test_ml12
 
 if __name__=="__main__":
   test_ml()

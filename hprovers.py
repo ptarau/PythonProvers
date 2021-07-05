@@ -14,8 +14,7 @@ def ljh(G,Vs):
     yield True
   elif isinstance(G,tuple) :
     H,Bs=G
-    R= any(ljh(H,Bs+Vs))
-    yield R
+    yield  any(ljh(H,Bs+Vs))
   elif check_head(G,Vs) :
     for X, Vs2 in select(Vs):
       if not isinstance(X,tuple): continue
@@ -23,8 +22,7 @@ def ljh(G,Vs):
       for A, Bs in select(As):
         if ljh_imp(A, B, Vs2):
           NewB = trimmed((B, Bs))
-          R= any(ljh(G, [NewB] + Vs2))
-          yield R
+          yield any(ljh(G, [NewB] + Vs2))
 
 def ljh_imp(X,B,Vs) :
   if not isinstance(X,tuple) :
@@ -169,9 +167,20 @@ def test_select() :
   xs=[1,2]
   for x in select(xs) : print(*x)
 
-def test_hprovers(n=6):
+
+def hptest():
+  a,b,c,d,X,Y=0,1,2,3,4,5
+  X= (d,[(b,[(d,[c])]), c])
+  Y= (d,[(b,[d]), c])
+  hprove_((X,[Y]))
+  print('')
+  hprove_((Y,[X]))
+
+def xptest():
   xCombType=(7,[(7,[(0,[0,1]),(4,[(4,[2,3]),(3,[2]),2]),(5,[5,6])])])
-  print('xCombType',hprove(xCombType))
+  print('xCombType',hprove_(xCombType))
+
+def test_hprovers(n=6):
   proven=0
   forms=0
   t1=timer()
@@ -185,4 +194,7 @@ def test_hprovers(n=6):
   print('TIME:',round(t2-t1,2))
 
 if __name__=="__main__":
-  test_hprovers()
+  #test_hprovers()
+  hptest()
+  print('\n-------\n')
+  xptest()
