@@ -1,4 +1,4 @@
-import sys
+
 import timeit
 
 #sys.setrecursionlimit(20000) # no need, but just in case
@@ -15,7 +15,7 @@ import timeit
 def typed(n) :
   for x  in closed(n) :
     t = typeOf(x)
-    if not (t is None) :
+    if t is not None :
       yield (x,t) 
 
 # generator for closed lambda terms of size n
@@ -165,7 +165,7 @@ def showType(t) :
 # human readable form of term x
 def showTerm(x) :
   if isvar(x) : return str(x)
-  elif len(x) is 1 :
+  elif len(x) == 1 :
     a = x[0]
     sa = showTerm(a)
     return 'l('+sa+')' 
@@ -177,17 +177,19 @@ def showTerm(x) :
     
 # -------------- tests ------------------
    
-t1 = (((1,1),(2,1)),(1,2))
-t2 = ((5,6),7)
-t3 = ((0,1),1)
-t4 = (2,2)
 
-vs1 = [0,1,1,2,0]
 
 def test1() :
+  t1 = (((1, 1), (2, 1)), (1, 2))
+  vs1 = [0, 1, 1, 2, 0]
   return [occurs(2,t1,vs1),occurs(3,t1,vs1),occurs(0,t1,vs1),occurs(4,t1,vs1)]
     
 def test2() :
+  t1 = (((1, 1), (2, 1)), (1, 2))
+  t2 = ((5, 6), 7)
+  t3 = ((0, 1), 1)
+  t4 = (2, 2)
+
   print(t1,'=',t2)
   print(unifyToEnv(t1,t2))
   print(unifyToTerm(t1,t2))
@@ -196,9 +198,6 @@ def test2() :
  
 def test3() :
   for t in closed(4) : print(t)
-
-def test4() :
-  return go(4)
 
 # computes all closed terms of size n       
 def cgo(n) :
@@ -261,4 +260,5 @@ time =  0.9006380939972587
 
 '''
       
-    
+if __name__=="__main__":
+  tgo(4)

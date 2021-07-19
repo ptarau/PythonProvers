@@ -12,9 +12,13 @@ class expr :
   
   def run(self) :
     return eval(str(self))
-    
-x=expr(0)
-y=expr(1)
-z=expr(2)
 
-def syntest() : return ((x&~y== ~y&x)|(z>>z)).run()
+def syntest() :
+  x = expr(0)
+  y = expr(1)
+  z = expr(2)
+
+  return ((x&~y== ~y&x)|(z>>z)).run()
+
+if __name__=="__main__":
+  print(syntest())

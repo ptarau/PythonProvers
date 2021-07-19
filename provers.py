@@ -1,13 +1,8 @@
-from syntax import expr as expr
 from cnf import to_cnf as to_cnf
 
 import signal
 
 def fp(g) : return fprove(g.run())
-  
-x=expr(0)
-y=expr(1)
-z=expr(2)
 
 # derived from Prolog version
 '''
@@ -126,33 +121,7 @@ def xsel(xs) :
     rs=xs[i+1:]
     yield (ls,x,rs)
     
-    
-    
-# derived from Prolog version   
-'''
-ljf(A,Vs):-memberchk(A,Vs),!.
-ljf(_,Vs):-memberchk(false,Vs),!.
-ljf(A <-> B,Vs):-!,ljf((A->B),Vs),ljf((B->A),Vs).
-ljf((A->B),Vs):-!,ljf(B,[A|Vs]).
-ljf(A & B,Vs):-!,ljf(A,Vs),ljf(B,Vs).
-ljf(G,Vs1):- % atomic or disj or false
-  select(Red,Vs1,Vs2),
-  ljf_reduce(Red,G,Vs2,Vs3),
-  !,
-  ljf(G,Vs3).
-ljf(A v B, Vs):-(ljf(A,Vs);ljf(B,Vs)),!.
 
-ljf_reduce((A->B),_,Vs1,Vs2):-!,ljf_imp(A,B,Vs1,Vs2).
-ljf_reduce((A & B),_,Vs,[A,B|Vs]):-!. 
-ljf_reduce((A<->B),_,Vs,[(A->B),(B->A)|Vs]):-!.
-ljf_reduce((A v B),G,Vs,[B|Vs]):-ljf(G,[A|Vs]).
-  
-ljf_imp((C-> D),B,Vs,[B|Vs]):-!,ljf((C->D),[(D->B)|Vs]).
-ljf_imp((C & D),B,Vs,[(C->(D->B))|Vs]):-!. 
-ljf_imp((C v D),B,Vs,[(C->B),(D->B)|Vs]):-!.
-ljf_imp((C <-> D),B,Vs,[((C->D)->((D->C)->B))|Vs]):-!.
-ljf_imp(A,B,Vs,[B|Vs]):-memberchk(A,Vs).  
-'''
 
 #def timed_call(g,t) :
   
@@ -204,8 +173,34 @@ def spy(Mes,G,Vs) :
   else :
     steps=0
     raise "ended"
-    
-  
+
+
+# derived from Prolog version
+'''
+ljf(A,Vs):-memberchk(A,Vs),!.
+ljf(_,Vs):-memberchk(false,Vs),!.
+ljf(A <-> B,Vs):-!,ljf((A->B),Vs),ljf((B->A),Vs).
+ljf((A->B),Vs):-!,ljf(B,[A|Vs]).
+ljf(A & B,Vs):-!,ljf(A,Vs),ljf(B,Vs).
+ljf(G,Vs1):- % atomic or disj or false
+  select(Red,Vs1,Vs2),
+  ljf_reduce(Red,G,Vs2,Vs3),
+  !,
+  ljf(G,Vs3).
+ljf(A v B, Vs):-(ljf(A,Vs);ljf(B,Vs)),!.
+
+ljf_reduce((A->B),_,Vs1,Vs2):-!,ljf_imp(A,B,Vs1,Vs2).
+ljf_reduce((A & B),_,Vs,[A,B|Vs]):-!. 
+ljf_reduce((A<->B),_,Vs,[(A->B),(B->A)|Vs]):-!.
+ljf_reduce((A v B),G,Vs,[B|Vs]):-ljf(G,[A|Vs]).
+
+ljf_imp((C-> D),B,Vs,[B|Vs]):-!,ljf((C->D),[(D->B)|Vs]).
+ljf_imp((C & D),B,Vs,[(C->(D->B))|Vs]):-!. 
+ljf_imp((C v D),B,Vs,[(C->B),(D->B)|Vs]):-!.
+ljf_imp((C <-> D),B,Vs,[((C->D)->((D->C)->B))|Vs]):-!.
+ljf_imp(A,B,Vs,[B|Vs]):-memberchk(A,Vs).  
+'''
+
 
 def ljf(G,Vs) :
   #spy('ljf',G,Vs) 

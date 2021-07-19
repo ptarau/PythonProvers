@@ -15,10 +15,6 @@ from hprovers import hprove
 from sat import is_taut,is_sat
 from syntax import expr as expr, syntest as syntest
 
-xx=expr(0)
-yy=expr(1)
-zz=expr(2)
-
 import timeit
 import trace
 import sys
