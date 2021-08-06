@@ -1,10 +1,9 @@
 # binary and binary-unary (Mozkin) tree generators
 
-import random
-from ranpart import getBellNumber, getRandomSet, randPart
-from remy import ranBin, ranBin0
 from provers import isTuple
-from utils import *
+from ranpart import getBellNumber, getRandomSet
+from remy import ranBin0
+
 
 # ---- all-terms of given size generators
 
@@ -179,6 +178,66 @@ def lt(x,y) :
 
 def leq(x,y) :
   return not lt(y,x)
+
+def cmp_(x,y) :
+    if x==y :return 0
+    if lt(x,y) : return -1
+    return 1
+
+
+
+def to_strict(t):
+    tterm = to_tterm(t)
+    sterm = to_strict_tterm(t)
+    lterm = to_lterm(sterm)
+    return lterm
+
+def to_tterm(t):
+    """ turns into hashable term"""
+    if not isinstance(t, tuple):
+        return t
+    h, bs = t
+    cs = map(to_tterm, bs)
+    ds = tuple(cs)
+    return (h, ds)
+
+
+def to_lterm(t):
+    """ back to our usual term form"""
+    if not isinstance(t, tuple):
+        return t
+    h, bs = t
+    cs = map(to_lterm, bs)
+    ds = list(cs)
+    return (h, ds)
+
+
+def to_strict_tterm(t):
+    if not isinstance(t, tuple):
+        return t
+    h, bs = t
+    cs = map(to_strict_tterm, bs)
+    cs=set(cs)
+    ds=qsorted(tuple(cs))
+    return (h, ds)
+
+
+
+def qsorted(xs) :
+    if not xs : return xs
+    #if simple(xs) : return xs
+    p=xs[0]
+    ys=xs[1:]
+    if isinstance(xs,list) :
+        ls=[x for x in ys if lt(x,p)]
+        gs=[x for x in ys if not lt(x,p)]
+        return qsorted(ls)+[p]+qsorted(gs)
+    else:
+        assert isinstance(xs,tuple)
+        ls = tuple(x for x in ys if lt(x, p))
+        gs = tuple(x for x in ys if not lt(x, p))
+        return qsorted(ls) + (p,) + qsorted(gs)
+
 
 def lt_sorted(xs) :
   for i,y in enumerate(xs):
