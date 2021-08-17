@@ -319,5 +319,5 @@ if __name__ == "__main__":
     pass
     # test_encoders()
     # pic_test()
-    # tl_test()
-    d_test()
+    tl_test()
+    #d_test()
