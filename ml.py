@@ -1,4 +1,3 @@
-from hprovers import *
 import random
 
 from classifiers import *
