@@ -48,6 +48,12 @@ def upper_binomial(k,n) :
   m = rough_limit(n + k, k)
   return binary_search(m//2, m)
 
+def kpair(xs):
+    assert len(xs)==2
+    return from_kseq(xs)
+
+def kunpair(z):
+    return to_kseq(2,z)
 
 def seq2set(xs) :
   """
