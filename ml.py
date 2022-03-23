@@ -157,6 +157,7 @@ class Learner:
                             score=self.score)
 
         def show_aucs(aucs):
+            print('SHOWING:',aucs)
             va, te = aucs
             print('\n', '-' * 40)
             print('VALIDATION', self.score, ':', round(va, 4))
@@ -254,7 +255,7 @@ def test_ml12():
     L.run()
 
 
-test_ml = test_ml12
+test_ml = test_ml4
 
 if __name__ == "__main__":
     pass

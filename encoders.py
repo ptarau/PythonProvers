@@ -139,7 +139,7 @@ def tl_test(size=10):
     draw(g)
 
 
-def d_test(m=7):
+def d_test(m=5):
     gen=sFormula
     store_dataset(generator=gen, m=m)
     gs = load_dataset(generator=gen,m=m)
@@ -151,7 +151,7 @@ def d_test(m=7):
 def df_code(term):
     """
     assumes terms canonically sorted
-    for code to be the same for equivlent formulas
+    for code to be the same for equivalent formulas
     """
     cs = []
 
@@ -317,7 +317,9 @@ def test_encoders(n=2):
 
 if __name__ == "__main__":
     pass
-    # test_encoders()
-    # pic_test()
+
+    pic_test()
     tl_test()
-    #d_test()
+    test_encoders()
+
+    d_test()

@@ -71,6 +71,6 @@ def run_with_data(classifier,x_tr,y_tr,x_va,y_va,x_te,y_te,
       te = classifier.predict(x_te)
       auc_te = accuracy_score(y_te,te)
 
-      return auc_va,auc_te
+    return auc_va,auc_te
 
   return run()
