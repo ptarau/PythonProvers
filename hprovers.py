@@ -9,6 +9,9 @@ def hprove(GBs) :
   G,Bs=GBs
   return any(ljh(G,Bs))
 
+
+
+
 def ljh(G,Vs):
   if G in Vs :
     yield True
@@ -58,39 +61,39 @@ def hprove_(GBs) :
   variant with tracing anabled
   """
   G,Bs=GBs
-  print(G,'assuming',Bs)
+  #print(G,'assuming',Bs)
   return any(ljh_(G,Bs))
 
 def ljh_(G,Vs):
   if G in Vs :
-    print(G,'if0',Vs)
+    #print(G,'if0',Vs)
     yield True
   elif isinstance(G,tuple) :
     H,Bs=G
     R= any(ljh_(H,Bs+Vs))
-    print(G,'if1',Bs+Vs)
+    #print(G,'if1',Bs+Vs)
     yield R
   elif check_head(G,Vs) :
     for X, Vs2 in select(Vs):
       if not isinstance(X,tuple): continue
-      print('choice1', X)
+      #print('choice1', X)
       (B, As) = X
       for A, Bs in select(As):
-        print('choice2',A)
+        #print('choice2',A)
         if ljh_imp_(A, B, Vs2):
           NewB = trimmed((B, Bs))
           R= any(ljh_(G, [NewB] + Vs2))
-          print(G,'if2',[NewB] + Vs2)
+          #print(G,'if2',[NewB] + Vs2)
           yield R
 
 def ljh_imp_(X,B,Vs) :
   if not isinstance(X,tuple) :
-    print(X,'if4',Vs)
+    #print(X,'if4',Vs)
     return X in Vs
   else:
     D,Cs=X
     R=any(ljh_(X,[(B,[D])]+Vs))
-    print(X, '<---if5____', [(B, [D])] + Vs)
+    #print(X, '<---if5____', [(B, [D])] + Vs)
     return R
 
 
@@ -180,7 +183,7 @@ def xptest():
   xCombType=(7,[(7,[(0,[0,1]),(4,[(4,[2,3]),(3,[2]),2]),(5,[5,6])])])
   print('xCombType',hprove_(xCombType))
 
-def test_hprovers(n=6):
+def test_hforms(n=5):
   proven=0
   forms=0
   t1=timer()
@@ -189,12 +192,13 @@ def test_hprovers(n=6):
     ok=hprove(t)
     proven+=ok
   t2=timer()
+  failed=forms-proven
   print('formulas:',forms,'proven:',
-        proven,'density:',round(proven/forms,4))
+        proven,'failed:',failed,'density:',round(proven/forms,4))
   print('TIME:',round(t2-t1,2))
 
 if __name__=="__main__":
-  #test_hprovers()
-  hptest()
-  print('\n-------\n')
-  xptest()
+  test_hforms(4)
+  #hptest()
+  #print('\n-------\n')
+  #xptest()

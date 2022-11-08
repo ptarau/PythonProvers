@@ -12,6 +12,8 @@ from provers import (
 )
 from hprovers import hprove
 
+from fhprovers import fhprove, fhFormula
+
 from sat import is_taut,is_sat
 from syntax import expr as expr, syntest as syntest
 
@@ -38,6 +40,9 @@ def allFormTest(n) :
 
 def hornFormTest(n) :
   return allFormTest2(hprove,hFormula,identity,n)
+
+def fhornFormTest(n) :
+  return allFormTest2(fhprove,fhFormula,identity,n)
 
 def strictHornFormTest(n) :
   return allFormTest2(hprove,sFormula,identity,n)
