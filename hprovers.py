@@ -198,7 +198,7 @@ def test_hforms(n=5):
   print('TIME:',round(t2-t1,2))
 
 if __name__=="__main__":
-  test_hforms(4)
+  test_hforms(7)
   #hptest()
   #print('\n-------\n')
   #xptest()
