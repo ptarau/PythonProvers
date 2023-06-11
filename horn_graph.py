@@ -3,20 +3,27 @@ import matplotlib.pyplot as plt
 from collections import deque
 
 
-def qprove(css0):
-
+def qprove(css0, goal=None,early=False):
     props = dict()
     css = []
+    gss = []
+
     for c in css0:
-        if isinstance(c, tuple):
-            h, bs = c
+        h, bs = c if isinstance(c, tuple) else (c, [])
+        if goal is not None and goal == h:
+            gss.append((h, bs))
         else:
-            h, bs = c, []
-        css.append((h, bs))
+            css.append((h, bs))
+    if goal is not None and gss == []:
+        return None
+
+    css = gss + css
+
 
     for h, bs in css:
         props[h] = False
         for b in bs: props[b] = False
+
     for h, bs in css:
         if bs == []:
             props[h] = True
@@ -30,11 +37,13 @@ def qprove(css0):
             if all(props[b] for b in bs):
                 if h == 'false':
                     return None
-
                 if not props[h] and all(props[b] for b in bs):
-                    props[h] = True
-                    change = True
                     css[i] = None
+                    props[h] = True
+
+                    if early and  h == goal: break
+
+                    change = True
 
     return [p for p, v in props.items() if v]
 
@@ -75,6 +84,9 @@ def ddel(d, x):
 
 
 def gprove(g, css, ics=None):
+    """
+    todo - not yet working
+    """
     G = to_horn_graph(css, ics=ics)
 
     for e in G.edges(): print(e)
@@ -114,6 +126,10 @@ def gprove(g, css, ics=None):
 
 
 def draw(G, edge_label='clause'):
+    """
+    draws (directed) graph using node names as node labels
+    and give edge_label for labeling edges
+    """
     # pos = nx.spring_layout(G)
     pos = nx.nx_agraph.graphviz_layout(G)
 
@@ -139,10 +155,10 @@ def test():
     css = [(p5, [p3, p4]), (p2, [p1]), (p1, [p2]), (p4, [p3]), (p3, [])]
     ics = [p1, p2]
     g = to_horn_graph(css, ics=ics)
-    print(g.number_of_edges())
-    draw(g)
+    # print(g.number_of_edges())
+    # draw(g)
 
-    #css = [2, (2, [0, 1, 2, 3]), (0, [2, 3]), 3, (4, [0, 2, 3]),('false',[0,4])]
+    # css = [2, (2, [0, 1, 2, 3]), (0, [2, 3]), 3, (4, [0, 2, 3]),('false',[0,4])]
     css = [2, (2, [0, 1, 2, 3]), (0, [2, 3]), 3, (4, [0, 2, 3])]
     print(css)
     r = qprove(css)
