@@ -4,7 +4,7 @@ from collections import deque
 
 
 def qprove(css0):
-    change = True
+
     props = dict()
     css = []
     for c in css0:
@@ -21,15 +21,20 @@ def qprove(css0):
         if bs == []:
             props[h] = True
 
+    change = True
     while change:
         change = False
         for i, c in enumerate(css):
             if c is None: continue
             h, bs = c
-            if not props[h] and all(props[b] for b in bs):
-                props[h] = True
-                change = True
-                css[i] = None
+            if all(props[b] for b in bs):
+                if h == 'false':
+                    return None
+
+                if not props[h] and all(props[b] for b in bs):
+                    props[h] = True
+                    change = True
+                    css[i] = None
 
     return [p for p, v in props.items() if v]
 
@@ -135,9 +140,10 @@ def test():
     ics = [p1, p2]
     g = to_horn_graph(css, ics=ics)
     print(g.number_of_edges())
-    # draw(g)
+    draw(g)
 
-    css = [2, (2, [0, 1, 2, 3]), (0, [2, 3]), 3, (4,[0,2,3])]
+    #css = [2, (2, [0, 1, 2, 3]), (0, [2, 3]), 3, (4, [0, 2, 3]),('false',[0,4])]
+    css = [2, (2, [0, 1, 2, 3]), (0, [2, 3]), 3, (4, [0, 2, 3])]
     print(css)
     r = qprove(css)
     print('model:', r)
