@@ -169,6 +169,19 @@ def hFormula_(n):
             yield decorate_horn_(tree, atomIter)
 
 
+def hFormulaPlain(n):
+    """
+    plain Horn formulas
+    """
+
+    for xs in list_partition(n):
+        gen = partition_(xs)
+        for xss in gen:
+            css = [(xs[0], xs[1:]) if xs[1:] else xs[0] for xs in xss]
+            for h in range(n):
+                yield h, css
+
+
 # tests
 
 def timer():
@@ -199,6 +212,21 @@ def test_hforms(n=4):
     forms = 0
     t1 = timer()
     for t in hFormula_(n):
+        forms += 1
+        ok = hprove(t)
+        proven += ok
+    t2 = timer()
+    failed = forms - proven
+    print('formulas:', forms, 'proven:',
+          proven, 'failed:', failed, 'density:', round(proven / forms, 4))
+    print('TIME:', round(t2 - t1, 2))
+
+
+def test_plain_hforms(n=4):
+    proven = 0
+    forms = 0
+    t1 = timer()
+    for t in hFormulaPlain(n):
         forms += 1
         ok = hprove(t)
         proven += ok
@@ -254,7 +282,13 @@ def small_test():
 
 
 if __name__ == "__main__":
-    test_hforms(7)
+    pass
+    for x in hFormula_(3): print(x)
+    for x in hFormulaPlain(7): print(x)
+
+    #test_hforms(6)
+    #test_plain_hforms(6)
+
     # hptest()
     # print('\n-------\n')
     # xptest()
