@@ -1,4 +1,5 @@
 import timeit
+from horn_graph import qprove as qprove
 
 
 def hprove(GBs):
@@ -224,16 +225,23 @@ def test_hforms(n=4):
 
 def test_plain_hforms(n=4):
     proven = 0
+    qproven=0
     forms = 0
     t1 = timer()
     for t in hFormulaPlain(n):
         forms += 1
         ok = hprove(t)
+        ok_q=qprove(t[1],goal=t[0]) is not None
         proven += ok
+        qproven+=ok_q
+        if ok_q and not ok: print(t)
     t2 = timer()
     failed = forms - proven
+    qfailed= forms-qproven
     print('formulas:', forms, 'proven:',
           proven, 'failed:', failed, 'density:', round(proven / forms, 4))
+    print('qformulas:', forms, 'qproven:',
+          qproven, 'failed:', qfailed, 'density:', round(qproven / forms, 4))
     print('TIME:', round(t2 - t1, 2))
 
 
@@ -283,11 +291,11 @@ def small_test():
 
 if __name__ == "__main__":
     pass
-    for x in hFormula_(3): print(x)
-    for x in hFormulaPlain(7): print(x)
+    #for x in hFormula_(3): print(x)
+    #for x in hFormulaPlain(3): print(x)
 
     #test_hforms(6)
-    #test_plain_hforms(6)
+    test_plain_hforms(7)
 
     # hptest()
     # print('\n-------\n')

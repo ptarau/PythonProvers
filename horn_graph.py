@@ -1,9 +1,14 @@
 import networkx as nx
 import matplotlib.pyplot as plt
-from collections import deque
+from collections import defaultdict
 
 
-def qprove(css0, goal=None,early=False):
+def qprove(css0, goal=None, early=True):
+    """
+    Variant of Algorithm 1 in Dowling and Gallier
+     Finds a (minimal) model of a propositional Horn Clause program
+     Added goal-driven optional goal-focussed execution
+    """
     props = dict()
     css = []
     gss = []
@@ -18,7 +23,6 @@ def qprove(css0, goal=None,early=False):
         return None
 
     css = gss + css
-
 
     for h, bs in css:
         props[h] = False
@@ -41,11 +45,52 @@ def qprove(css0, goal=None,early=False):
                     css[i] = None
                     props[h] = True
 
-                    if early and  h == goal: break
+                    if early and h == goal: break
 
                     change = True
 
-    return [p for p, v in props.items() if v]
+    model = [p for p, v in props.items() if v]
+    if goal is not None and goal not in model: return None
+    return model
+
+
+def select(xs):
+    for i in range(len(xs)):
+        yield xs[i], xs[:i] + xs[i + 1:]
+
+
+def sprove(css0, goal=None,early=True):
+    """
+    mimics Prolog equivalent derived fro IPC prover
+    TODO: work on correctness
+    """
+    css = []
+    found = False
+    for c in css0:
+        h, bs = c if isinstance(c, tuple) else (c, [])
+        if h == goal: found = True
+        css.append((h, bs))
+    if goal is not None and not found: return None
+
+    model = set()
+    change = True
+    Vss = css
+    while Vss and change:
+        if early and goal in model: break
+        change = False
+        for (B, As), NewVss in select(Vss):
+            if As == [] or all(X in model for X in As):
+                model.add(B)
+                change = True
+                Vss = NewVss
+            else:
+                for A, Bs in select(As):
+                    if (A,[]) in NewVss:
+                        Vss = [(B, Bs)] + NewVss
+                        break
+
+    if goal is not None and goal not in model: return None
+    return model
 
 
 def to_horn_graph(css, ics=None):
@@ -60,7 +105,7 @@ def to_horn_graph(css, ics=None):
                     g.add_edge(b, h, clause=i)
             if ics is not None:
                 for ic in ics:
-                    g.add_edge(ic, False, clause=i)
+                    g.add_edge(ic, 'false', clause=i)
         else:
             g.add_edge(True, c, clause=i)
 
@@ -83,10 +128,11 @@ def ddel(d, x):
     del d[x]
 
 
+"""
 def gprove(g, css, ics=None):
-    """
-    todo - not yet working
-    """
+
+    #todo - not yet working
+
     G = to_horn_graph(css, ics=ics)
 
     for e in G.edges(): print(e)
@@ -123,6 +169,7 @@ def gprove(g, css, ics=None):
                 G.remove_edge(b, h)
 
     return False
+"""
 
 
 def draw(G, edge_label='clause'):
@@ -162,9 +209,12 @@ def test():
     css = [2, (2, [0, 1, 2, 3]), (0, [2, 3]), 3, (4, [0, 2, 3])]
     print(css)
     r = qprove(css)
-    print('model:', r)
+    print('qprove model:', r)
     g = to_horn_graph(css)
-    draw(g)
+    # draw(g)
+    m = sprove(css, None)
+    print('sprove model:', m)
 
 
-test()
+if __name__ == "__main__":
+    test()
