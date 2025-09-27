@@ -3,7 +3,5 @@ matplotlib
 scikit-learn
 more-itertools
 pycosat
-
-
-
-
+mpmath
+numpy

@@ -50,7 +50,7 @@ def selectFirst(Xs) :
     for Z,Zs in selectFirst(Ys) :
       yield Z,(X,Zs)    
 
-# slightly faster, with slices       
+# slightly slower, with slices       
 def jprove(G) : return any(lja(G,()))
   
 def lja(G,Vs1) :
