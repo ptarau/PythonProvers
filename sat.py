@@ -3,7 +3,7 @@ from cnf import to_cnf
 
 def picotest() :
   cnf = [[1, -5, 4], [-1, 5, 3, 4], [-3, -4]]
-  print(pycosat.solve(cnf))
+  print('start:',pycosat.solve(cnf))
   for sol in pycosat.itersolve(cnf) :
     print(sol)
     
@@ -34,3 +34,6 @@ def is_taut(t) :
   #print('sol',sol)
   return 'UNSAT' == pycosat.solve(cnf)
   
+if __name__=="__main__" :
+    picotest()   
+   
