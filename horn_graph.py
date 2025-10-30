@@ -26,7 +26,8 @@ def qprove(css0, goal=None, early=True):
 
     for h, bs in css:
         props[h] = False
-        for b in bs: props[b] = False
+        for b in bs:
+            props[b] = False
 
     for h, bs in css:
         if bs == []:
@@ -36,47 +37,53 @@ def qprove(css0, goal=None, early=True):
     while change:
         change = False
         for i, c in enumerate(css):
-            if c is None: continue
+            if c is None:
+                continue
             h, bs = c
             if all(props[b] for b in bs):
-                if h == 'false':
+                if h == "false":
                     return None
                 if not props[h] and all(props[b] for b in bs):
                     css[i] = None
                     props[h] = True
 
-                    if early and h == goal: break
+                    if early and h == goal:
+                        break
 
                     change = True
 
     model = [p for p, v in props.items() if v]
-    if goal is not None and goal not in model: return None
+    if goal is not None and goal not in model:
+        return None
     return model
 
 
 def select(xs):
     for i in range(len(xs)):
-        yield xs[i], xs[:i] + xs[i + 1:]
+        yield xs[i], xs[:i] + xs[i + 1 :]
 
 
-def sprove(css0, goal=None,early=True):
+def sprove(css0, goal=None, early=True):
     """
-    mimics Prolog equivalent derived fro IPC prover
+    mimics Prolog equivalent derived from IPC prover
     TODO: work on correctness
     """
     css = []
     found = False
     for c in css0:
         h, bs = c if isinstance(c, tuple) else (c, [])
-        if h == goal: found = True
+        if h == goal:
+            found = True
         css.append((h, bs))
-    if goal is not None and not found: return None
+    if goal is not None and not found:
+        return None
 
     model = set()
     change = True
     Vss = css
     while Vss and change:
-        if early and goal in model: break
+        if early and goal in model:
+            break
         change = False
         for (B, As), NewVss in select(Vss):
             if As == [] or all(X in model for X in As):
@@ -85,11 +92,12 @@ def sprove(css0, goal=None,early=True):
                 Vss = NewVss
             else:
                 for A, Bs in select(As):
-                    if (A,[]) in NewVss:
+                    if (A, []) in NewVss:
                         Vss = [(B, Bs)] + NewVss
                         break
 
-    if goal is not None and goal not in model: return None
+    if goal is not None and goal not in model:
+        return None
     return model
 
 
@@ -105,7 +113,7 @@ def to_horn_graph(css, ics=None):
                     g.add_edge(b, h, clause=i)
             if ics is not None:
                 for ic in ics:
-                    g.add_edge(ic, 'false', clause=i)
+                    g.add_edge(ic, "false", clause=i)
         else:
             g.add_edge(True, c, clause=i)
 
@@ -114,8 +122,10 @@ def to_horn_graph(css, ics=None):
 
 # dict based ord sets
 
+
 def dpop(d):
-    if not d: return None
+    if not d:
+        return None
     it = iter(d)
     return d.pop(next(it))
 
@@ -172,7 +182,7 @@ def gprove(g, css, ics=None):
 """
 
 
-def draw(G, edge_label='clause'):
+def draw(G, edge_label="clause"):
     """
     draws (directed) graph using node names as node labels
     and give edge_label for labeling edges
@@ -182,18 +192,22 @@ def draw(G, edge_label='clause'):
 
     plt.figure()
     nx.draw(
-        G, pos, edge_color='black', width=1, linewidths=2,
-        node_size=500, node_color='grey', alpha=0.9,
+        G,
+        pos,
+        edge_color="black",
+        width=1,
+        linewidths=2,
+        node_size=500,
+        node_color="grey",
+        alpha=0.9,
         labels={node: node for node in G.nodes()},
         arrows=True,
     )
     edge_labels = [((x, y), G[x][y][edge_label]) for (x, y) in G.edges()]
     nx.draw_networkx_edge_labels(
-        G, pos,
-        font_color='black',
-        edge_labels=dict(edge_labels)
+        G, pos, font_color="black", edge_labels=dict(edge_labels)
     )
-    plt.axis('off')
+    plt.axis("off")
     plt.show()
 
 
@@ -209,11 +223,11 @@ def test():
     css = [2, (2, [0, 1, 2, 3]), (0, [2, 3]), 3, (4, [0, 2, 3])]
     print(css)
     r = qprove(css)
-    print('qprove model:', r)
+    print("qprove model:", r)
     g = to_horn_graph(css)
-    # draw(g)
+    draw(g)
     m = sprove(css, None)
-    print('sprove model:', m)
+    print("sprove model:", m)
 
 
 if __name__ == "__main__":

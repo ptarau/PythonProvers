@@ -22,11 +22,12 @@ def ljhf(G, Vs):
         yield any(ljhf(H, Bs + Vs))
     elif check_head(G, Vs):
         for X, Vs2 in select(Vs):
-            if not isinstance(X, tuple): continue
+            if not isinstance(X, tuple):
+                continue
             B, As = decons(X)
             for A, Bs in select(As):
                 if ljhf_imp(A, B, Vs2):
-                    NewB = trimmed(B,Bs)
+                    NewB = trimmed(B, Bs)
                     yield any(ljhf(G, (NewB,) + Vs2))
 
 
@@ -49,14 +50,15 @@ def check_head(G, Vs):
     return False
 
 
-def trimmed(H,Bs):
-    if not Bs: return H
-    return (H,)+Bs
+def trimmed(H, Bs):
+    if not Bs:
+        return H
+    return (H,) + Bs
 
 
 def select(xs):
     for i in range(len(xs)):
-        yield xs[i], xs[:i] + xs[i + 1:]
+        yield xs[i], xs[:i] + xs[i + 1 :]
 
 
 def decons(x):
@@ -64,6 +66,7 @@ def decons(x):
 
 
 # to make this self-contained, for testing with pypy
+
 
 def partition(xs):
     if len(xs) == 1:
@@ -74,12 +77,13 @@ def partition(xs):
     for smaller in partition(xs[1:]):
         # insert `first` in each of the subpartition's subsets
         for n, subset in enumerate(smaller):
-            yield smaller[:n] + ((first,) + subset,) + smaller[n + 1:]
+            yield smaller[:n] + ((first,) + subset,) + smaller[n + 1 :]
         # put `first` in its own subset
         yield ((first,),) + smaller
 
 
 # for x in partition((1,2,3,4)) : print(x)
+
 
 # from partition as list of list, to list of indices
 def part2list(N, pss):
@@ -99,6 +103,7 @@ def list_partition(n):
 
 
 # for x in list_partition(4): print(x)
+
 
 def decorate_horn(tree, leafIter):
     x = leafIter.__next__()
@@ -124,7 +129,7 @@ def horn(n):
     generates nested horn clauses of size n
     """
     if n == 0:
-        yield 'o', ()
+        yield "o", ()
     else:
         for k in range(0, n):
             for f, l in horn(k):
@@ -136,13 +141,15 @@ def horn(n):
 
 # tests
 
+
 def timer():
     return timeit.default_timer()
 
 
 def test_select():
     xs = [1, 2]
-    for x in select(xs): print(*x)
+    for x in select(xs):
+        print(*x)
 
 
 def hptest():
@@ -150,13 +157,12 @@ def hptest():
     X = (d, (b, (d, c)), c)
     Y = (d, (b, d), c)
     res = fhprove((Y, X))
-    print('RES:', res)
+    print("RES:", res)
 
 
 def xptest():
     xCombType = (7, (7, (0, 0, 1), (4, (4, 2, 3), (3, 2), 2), (5, 5, 6)))
-    xCombType = (7, (7, (0, 0, 1), (4, (4, 2, 3), (3, 2), 2), (5, 5, 6)))
-    print('xCombType', fhprove(xCombType))
+    print("xCombType", fhprove(xCombType))
 
 
 def test_fhprovers(n=5):
@@ -171,14 +177,22 @@ def test_fhprovers(n=5):
         proven += ok
         if gold and not ok:
             bad += 1
-            print('should not fail:', f, '-----', h)
+            print("should not fail:", f, "-----", h)
         elif not gold and ok:
             bad += 1
-            print('should not succeeed:', f, '-----', h)
+            print("should not succeeed:", f, "-----", h)
     t2 = timer()
-    print('formulas:', forms, 'proven:',
-          proven, 'bad:', bad, 'density:', round(proven / forms, 4))
-    print('TIME:', round(t2 - t1, 2))
+    print(
+        "formulas:",
+        forms,
+        "proven:",
+        proven,
+        "bad:",
+        bad,
+        "density:",
+        round(proven / forms, 4),
+    )
+    print("TIME:", round(t2 - t1, 2))
 
 
 if __name__ == "__main__":

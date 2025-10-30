@@ -21,7 +21,8 @@ def ljh(G, Vs):
         yield any(ljh(H, Bs + Vs))
     elif check_head(G, Vs):
         for X, Vs2 in select(Vs):
-            if not isinstance(X, tuple): continue
+            if not isinstance(X, tuple):
+                continue
             (B, As) = X
             for A, Bs in select(As):
                 if ljh_imp(A, B, Vs2):
@@ -42,7 +43,8 @@ def ljh_imp(X, B, Vs):
 def check_head(G, Vs):
     for X in Vs:
         if isinstance(X, tuple):
-            if G == X[0]: return True
+            if G == X[0]:
+                return True
         elif G == X:
             return True
     return False
@@ -50,13 +52,14 @@ def check_head(G, Vs):
 
 def trimmed(X):
     H, Bs = X
-    if not Bs: return H
+    if not Bs:
+        return H
     return X
 
 
 def select(xs):
     for i in range(len(xs)):
-        yield xs[i], xs[:i] + xs[i + 1:]
+        yield xs[i], xs[:i] + xs[i + 1 :]
 
 
 def hprove_(GBs):
@@ -82,7 +85,8 @@ def ljh_(G, Vs):
         yield R
     elif check_head(G, Vs):
         for X, Vs2 in select(Vs):
-            if not isinstance(X, tuple): continue
+            if not isinstance(X, tuple):
+                continue
             # print('choice1', X)
             (B, As) = X
             for A, Bs in select(As):
@@ -107,6 +111,7 @@ def ljh_imp_(X, B, Vs):
 
 # to make this self-contained, for testing with pypy
 
+
 def partition_(xs):
     if len(xs) == 1:
         yield [xs]
@@ -116,7 +121,7 @@ def partition_(xs):
     for smaller in partition_(xs[1:]):
         # insert `first` in each of the subpartition's subsets
         for n, subset in enumerate(smaller):
-            yield smaller[:n] + [[first] + subset] + smaller[n + 1:]
+            yield smaller[:n] + [[first] + subset] + smaller[n + 1 :]
         # put `first` in its own subset
         yield [[first]] + smaller
 
@@ -143,7 +148,7 @@ def horn_(n):
     generates nested horn clauses of size n
     """
     if n == 0:
-        yield 'o', []
+        yield "o", []
     else:
         for k in range(0, n):
             for f, l in horn_(k):
@@ -185,13 +190,15 @@ def hFormulaPlain(n):
 
 # tests
 
+
 def timer():
     return timeit.default_timer()
 
 
 def test_select():
     xs = [1, 2]
-    for x in select(xs): print(*x)
+    for x in select(xs):
+        print(*x)
 
 
 def hptest():
@@ -199,13 +206,13 @@ def hptest():
     X = (d, [(b, [(d, [c])]), c])
     Y = (d, [(b, [d]), c])
     hprove_((X, [Y]))
-    print('')
+    print("")
     hprove_((Y, [X]))
 
 
 def xptest():
     xCombType = (7, [(7, [(0, [0, 1]), (4, [(4, [2, 3]), (3, [2]), 2]), (5, [5, 6])])])
-    print('xCombType', hprove_(xCombType))
+    print("xCombType", hprove_(xCombType))
 
 
 def test_hforms(n=4):
@@ -218,31 +225,56 @@ def test_hforms(n=4):
         proven += ok
     t2 = timer()
     failed = forms - proven
-    print('formulas:', forms, 'proven:',
-          proven, 'failed:', failed, 'density:', round(proven / forms, 4))
-    print('TIME:', round(t2 - t1, 2))
+    print(
+        "formulas:",
+        forms,
+        "proven:",
+        proven,
+        "failed:",
+        failed,
+        "density:",
+        round(proven / forms, 4),
+    )
+    print("TIME:", round(t2 - t1, 2))
 
 
 def test_plain_hforms(n=4):
     proven = 0
-    qproven=0
+    qproven = 0
     forms = 0
     t1 = timer()
     for t in hFormulaPlain(n):
         forms += 1
         ok = hprove(t)
-        ok_q=qprove(t[1],goal=t[0]) is not None
+        ok_q = qprove(t[1], goal=t[0]) is not None
         proven += ok
-        qproven+=ok_q
-        if ok_q and not ok: print(t)
+        qproven += ok_q
+        if ok_q and not ok:
+            print(t)
     t2 = timer()
     failed = forms - proven
-    qfailed= forms-qproven
-    print('formulas:', forms, 'proven:',
-          proven, 'failed:', failed, 'density:', round(proven / forms, 4))
-    print('qformulas:', forms, 'qproven:',
-          qproven, 'failed:', qfailed, 'density:', round(qproven / forms, 4))
-    print('TIME:', round(t2 - t1, 2))
+    qfailed = forms - qproven
+    print(
+        "formulas:",
+        forms,
+        "proven:",
+        proven,
+        "failed:",
+        failed,
+        "density:",
+        round(proven / forms, 4),
+    )
+    print(
+        "qformulas:",
+        forms,
+        "qproven:",
+        qproven,
+        "failed:",
+        qfailed,
+        "density:",
+        round(qproven / forms, 4),
+    )
+    print("TIME:", round(t2 - t1, 2))
 
 
 class Term:
@@ -274,12 +306,12 @@ def show_hForms():
         print()
 
 
-def save_hForms(n, suf='.tsv'):
-    with open('hforms_' + str(n) + suf, 'w') as f:
+def save_hForms(n, suf=".tsv"):
+    with open("hforms_" + str(n) + suf, "w") as f:
         for i, x in enumerate(hFormula_(n)):
             ok = int(hprove(x))
             t = hform2term(x)
-            print(ok, '\t', t, file=f)
+            print(ok, "\t", t, file=f)
 
 
 def small_test():
@@ -291,11 +323,11 @@ def small_test():
 
 if __name__ == "__main__":
     pass
-    #for x in hFormula_(3): print(x)
-    #for x in hFormulaPlain(3): print(x)
+    # for x in hFormula_(3): print(x)
+    # for x in hFormulaPlain(3): print(x)
 
-    #test_hforms(6)
-    test_plain_hforms(7)
+    # test_hforms(6)
+    # test_plain_hforms(7)
 
     # hptest()
     # print('\n-------\n')
@@ -308,4 +340,4 @@ if __name__ == "__main__":
     # save_hForms(5)
     # save_hForms(6)
     # save_hForms(7)
-    # small_test()
+    small_test()

@@ -7,11 +7,12 @@ import numpy as np
 import matplotlib.colors as mcolors
 from matplotlib.colors import hsv_to_rgb
 
+
 class DColor:
     def __init__(self, samples=3500, xmin=-10, xmax=10, ymin=-10, ymax=10):
-        #plot settings
+        # plot settings
         self._samples = samples
-        #axes
+        # axes
         self._xmin = xmin
         self._xmax = xmax
         self._ymin = ymin
@@ -22,16 +23,16 @@ class DColor:
         """Create the domains for Real (x) and Imaginary (y) values respectively"""
         x = np.linspace(self._xmin, self._xmax, self._samples)
         y = np.linspace(self._ymin, self._ymax, self._samples)
-        self.xx, self.yy=np.meshgrid(x,y)
+        self.xx, self.yy = np.meshgrid(x, y)
 
     def makeColorModel(self, zz):
         """Create the HSV color model for the function domain that will be plotted"""
-        H = self.normalize(np.angle(zz) % (2. * np.pi)) #Hue determined by arg(z)
-        r = np.log2(1. + np.abs(zz))
-        S = (1. + np.abs(np.sin(2. * np.pi * r))) / 2.
-        V = (1. + np.abs(np.cos(2. * np.pi * r))) / 2.
+        H = self.normalize(np.angle(zz) % (2.0 * np.pi))  # Hue determined by arg(z)
+        r = np.log2(1.0 + np.abs(zz))
+        S = (1.0 + np.abs(np.sin(2.0 * np.pi * r))) / 2.0
+        V = (1.0 + np.abs(np.cos(2.0 * np.pi * r))) / 2.0
 
-        return H,S,V
+        return H, S, V
 
     def normalize(self, arr):
         """Used for normalizing data in array based on min/max values"""
@@ -42,43 +43,43 @@ class DColor:
 
     def plot(self, f, xdim=10, ydim=8, plt_dpi=100):
         """Plot a complex-valued function
-            Arguments:
-            f -- a (preferably) lambda-function defining a complex-valued function
-            Keyword Arguments:
-            xdim -- x dimensions
-            ydim -- y dimensions
-            plt_dpi -- density of pixels per inch
+        Arguments:
+        f -- a (preferably) lambda-function defining a complex-valued function
+        Keyword Arguments:
+        xdim -- x dimensions
+        ydim -- y dimensions
+        plt_dpi -- density of pixels per inch
         """
-        zz=f(self.z(self.xx,self.yy))
-        H,S,V = self.makeColorModel(zz)
-        rgb = hsv_to_rgb(np.dstack((H,S,V)))
+        zz = f(self.z(self.xx, self.yy))
+        H, S, V = self.makeColorModel(zz)
+        rgb = hsv_to_rgb(np.dstack((H, S, V)))
 
         fig = plt.figure(figsize=(xdim, ydim), dpi=plt_dpi)
         plt.imshow(rgb)
-        plt.gca().invert_yaxis() #make CCW orientation positive
+        plt.gca().invert_yaxis()  # make CCW orientation positive
         plt.gca().get_xaxis().set_visible(False)
         plt.gca().get_yaxis().set_visible(False)
         plt.show()
 
     def z(self, x, y):
         """return complex number x+iy
-            If inputs are arrays, then it returns an array with corresponding x_j+iy_j values
+        If inputs are arrays, then it returns an array with corresponding x_j+iy_j values
         """
-        return x+1j*y
+        return x + 1j * y
+
 
 def test_dcolor():
-  dc = DColor(xmin=-10, xmax=10, ymin=-10, ymax=10, samples=1000)
-  # dc.plot(lambda z : (z**5+1j*z**4+z**3+1j*z**2+z+1j+1)/np.sin(z))
-  #dc.plot(lambda z: z ** 3 + 2j * z ** 2 + 2j + z)
-  # dc.plot(lambda z : (1/(1-1j*z))-(1+1j*z))
-  # dc.plot(lambda z : z**3)
-  #dc.plot(lambda z : ((z+1-2j)*(z+2+2j)*((z-2)**2))/(z**3))
-  #dc.plot(lambda z : np.cosh(z))
-  dc.plot(lambda z: (z+1)*(z-1)*(z)*(z-(0+1j)))
+    dc = DColor(xmin=-10, xmax=10, ymin=-10, ymax=10, samples=1000)
+    # dc.plot(lambda z : (z**5+1j*z**4+z**3+1j*z**2+z+1j+1)/np.sin(z))
+    # dc.plot(lambda z: z ** 3 + 2j * z ** 2 + 2j + z)
+    # dc.plot(lambda z : (1/(1-1j*z))-(1+1j*z))
+    # dc.plot(lambda z : z**3)
+    # dc.plot(lambda z : ((z+1-2j)*(z+2+2j)*((z-2)**2))/(z**3))
+    # dc.plot(lambda z: np.cosh(z))
+    # dc.plot(lambda z: (z**3 - 1) / (z**2 + 1))
+    # dc.plot(lambda z: (z+1)*(z-1)*(z)*(z-(0+1j)))
+    dc.plot(lambda z: z * (1 - z))
 
 
-if __name__=="__main__":
-  test_dcolor()
-
-
-
+if __name__ == "__main__":
+    test_dcolor()
