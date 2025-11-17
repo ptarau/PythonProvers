@@ -46,7 +46,7 @@ def collatz(n):
 import math
 
 
-def toy_primes(N):
+def default_char_fun(N):
     # return list(range(1, N))
     return [int(n * math.log(n)) for n in range(2, N + 1)]
 
@@ -68,14 +68,18 @@ def to_bins(ns):
 # seen as an infinite series of base b digits indicating the bin
 # a generalization of the characteristic function to a b-base equivalent
 # example of bins: [0..] modulo b
-def bunpair(n, ns, b=2):
+def bunpair(n, ns=[], b=2):
+    assert n >= 0, n
+    if n == 0:
+        return 0, 0
+    if not ns:
+        ns=default_char_fun(n)
+
 
     hs = []
     ts = []
     i = 0
-    assert n >= 0, n
-    if n == 0:
-        return 0, 0
+   
 
     while n > 0:
         d, n = get_digit(b, n)
@@ -87,9 +91,13 @@ def bunpair(n, ns, b=2):
     return from_base(2, hs), from_base(2, ts)
 
 
-def bpair(ht, ns, b=2):
-    bs = to_bins(ns)
+def bpair(ht, ns=[], b=2):
     h, t = ht
+    if not ns:
+        ns=default_char_fun(2+max(h,t))
+
+    bs = to_bins(ns)
+    
     hs = to_base(b, h)
     ts = to_base(b, t)
     rs = []
@@ -112,14 +120,16 @@ def bpair(ht, ns, b=2):
     return from_base(b, rs)
 
 
-def test1(m=20):
-    ns = toy_primes(m)
+def test(m=20):
     ps = []
     for n in range(m):
-        h, t = bunpair(n, ns)
-        # print(n, "-->", (h, t))
-        if t == 0:
-            print("!!!!!!!!", n, "->", h, t)
+        h, t = bunpair(n)
+        print('ht:',h,t)
+        nn=bpair((h,t))
+        if m<=1000 and h>t:
+            assert n==nn,n
+            print(n, "-->", (h, t))
+        
         ps.append((h, t))
     assert len(ps) == m
     # return ps
